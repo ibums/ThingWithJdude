@@ -35,7 +35,7 @@ rightwall = place_meeting(x + abs(hspeed) + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 {
+if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone{
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -46,7 +46,7 @@ if leftwall and hspeed < 0 {
    }
 }
 
-if rightwall and hspeed > 0 {
+if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone > 0{
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
