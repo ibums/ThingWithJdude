@@ -8,3 +8,15 @@ airborne = false;
 leftwall = false;
 rightwall = false;
 horzBuffer = 1;
+
+enum state_type {
+   idle,
+   grounded,
+   jumping,
+   moving,
+   airborne,
+   dead,
+   wallGrabIdle
+};
+
+state = state_type.idle;
