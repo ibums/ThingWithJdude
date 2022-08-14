@@ -3,9 +3,11 @@
 if !place_meeting(x, y+vspeed+1, obj_block)
 {
     gravity = 1.25;
+	airborne = true;
 }
 else
 {
+	airborne = false;
 	if vspeed>0 {
 		gravity = 0;
 		vspeed  = 0;
@@ -77,13 +79,25 @@ if place_meeting(x+hspeed+6, y, obj_block)
 else rightwall = false;
 
 //jump
-if place_meeting(x, y+1, obj_block)
-{
-	if keyboard_check_pressed(vk_space){
+if (airborne=false) and keyboard_check_pressed(vk_space){
 
-		vspeed = -3;
-		jump = true;
-	}
+	vspeed = -3;
+	jump = true;
+
+}
+
+if (airborne=true) and (leftwall=true) and keyboard_check_pressed(vk_space){
+
+	vspeed=-20;
+	hspeed=20;
+
+}
+
+if (airborne=true) and (rightwall=true) and keyboard_check_pressed(vk_space){
+
+	vspeed=-20;
+	hspeed=-20;
+
 }
 
 if keyboard_check_released(vk_space){
@@ -101,7 +115,7 @@ if jump == true{
 }
 
 //movement left / right
-
+// extra speed when moving in the opposite direction to speed?
 if keyboard_check(vk_left) and leftwall = false{
 	if hspeed > -10{ 
 		hspeed = hspeed-_acceleration;
