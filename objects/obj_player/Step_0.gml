@@ -2,6 +2,7 @@
 var foundground = false;
 airborne = !place_meeting(x, y + vspeed + 1, obj_block);
 
+//Why do we need the +1 / -1???
 if !place_meeting(x, y + vspeed + 1, obj_block) {
    gravity = 1.25;
 } else if vspeed > 0 {
@@ -29,8 +30,9 @@ if place_meeting(x, y + vspeed - 1, obj_block) and vspeed < 0 {
    }
 }
 
-leftwall = place_meeting(x + hspeed - 6, y, obj_block);
-rightwall = place_meeting(x + hspeed + 6, y, obj_block);
+//Why do we need the +1 / -1???
+leftwall = place_meeting(x + hspeed - horzBuffer - 1, y, obj_block);
+rightwall = place_meeting(x + hspeed + horzBuffer + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
@@ -39,7 +41,7 @@ if leftwall and hspeed < 0 {
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
       if place_meeting(x - ix, y, obj_block) {
-			x = x - ix + 5;
+			x = x - ix + horzBuffer;
 			foundwall = true;
 		}
    }
@@ -50,7 +52,7 @@ if rightwall and hspeed > 0 {
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
       if place_meeting(x + ix, y, obj_block) {
-   		x = x + ix - 5;
+   		x = x + ix - horzBuffer;
    		foundwall = true;
    	}
    }
