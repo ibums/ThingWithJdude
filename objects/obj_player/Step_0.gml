@@ -35,7 +35,7 @@ rightwall = place_meeting(x + abs(hspeed) + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone{
+if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -46,7 +46,7 @@ if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone{
    }
 }
 
-if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone > 0{
+if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -172,3 +172,23 @@ switch(state) {
       handle_wallGrabIdle();
       break;
 }
+
+//taking out the buffer temporarily from the
+//rightslope line in case we don't need it
+var _slopeid = instance_place(x + hspeed, y, obj_diagonal_up)
+if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
+
+//find point of collission on triangle (_xcollission, _ycollission)
+var _y=(
+	((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
+	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
+	);
+y = _y-16;
+gravity=0;
+state = state_type.grounded;
+}
+//!!! ibums read this !!!
+// make a new jump for when you have leftwall and rightwall
+//that just jumps you straight up or maybe slides you up?
+
+print(state);
