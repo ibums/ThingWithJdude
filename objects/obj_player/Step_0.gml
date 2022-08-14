@@ -42,10 +42,9 @@ if place_meeting(x, y+vspeed-1, obj_block)
 }
 
 //horizontal collission
-if place_meeting(x+hspeed-6, y, obj_block)
-{
+if place_meeting(x+hspeed-6, y, obj_block){
+	leftwall = true;
 	if hspeed<0{
-		leftwall = true;
 		hspeed = 0;
 		var ix = 0;
 		var foundwall = false;
@@ -61,9 +60,8 @@ if place_meeting(x+hspeed-6, y, obj_block)
 else leftwall = false;
 
 if place_meeting(x+hspeed+6, y, obj_block)
-{
+	{rightwall = true;
 	if hspeed>0{
-		rightwall = true;
 		hspeed = 0;
 		var ix = 0;
 		var foundwall = false;
