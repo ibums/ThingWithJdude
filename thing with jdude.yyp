@@ -2,6 +2,7 @@
   "resources": [
     {"id":{"name":"spr_stand_in","path":"sprites/spr_stand_in/spr_stand_in.yy",},"order":0,},
     {"id":{"name":"obj_player","path":"objects/obj_player/obj_player.yy",},"order":0,},
+    {"id":{"name":"print","path":"scripts/print/print.yy",},"order":0,},
     {"id":{"name":"obj_block","path":"objects/obj_block/obj_block.yy",},"order":1,},
     {"id":{"name":"spr_stand_in2","path":"sprites/spr_stand_in2/spr_stand_in2.yy",},"order":1,},
     {"id":{"name":"rm_game","path":"rooms/rm_game/rm_game.yy",},"order":0,},
