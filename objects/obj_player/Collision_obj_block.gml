@@ -1,4 +1,44 @@
-if (x>other.x) x = x+1;
-if (x<other.x) x = x-1;
-if (y>other.y) y = y+1;
-if (y<other.y) y = y-1;
+if (x > other.x and y > other.y) {
+   var escapedWall = false;  
+   for(var ix = 0; !escapedWall; ix++) {
+      if !place_meeting(x + ix, y + ix, obj_block) {
+			x += ix;
+         y += ix
+			escapedWall = true;
+		}
+   }
+}
+
+else if (x < other.x and y > other.y) {
+   var escapedWall = false;
+   for(var ix = 0; !escapedWall; ix++) {
+      if !place_meeting(x - ix, y + ix, obj_block) {
+   		x -= ix;
+         y += ix;
+   		escapedWall = true;
+   	}
+   }
+}
+
+else if (x > other.x and y < other.y) {
+   var escapedFloor = false;
+   for(var iy = 0; !escapedFloor; iy++) {
+      if !place_meeting(x + iy, y - iy, obj_block) {
+         x += iy;
+			y -= iy;
+			escapedFloor = true;
+         state = state_type.grounded;
+		}
+   }
+} 
+else if (x < other.x and y < other.y) {
+   var escapedCeiling = false;
+   for(var iy = 0; !escapedCeiling; iy++) {
+      if !place_meeting(x - iy, y - iy, obj_block) {
+         x -= iy;
+   		y -= iy;
+   		escapedCeiling = true;
+         state = state_type.airborne;
+   	}
+   }
+}

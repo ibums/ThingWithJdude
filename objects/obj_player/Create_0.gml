@@ -16,8 +16,7 @@ enum state_type {
    moving,
    airborne,
    dead,
-   leftWallGrabIdle,
-   rightWallGrabIdle
+   wallGrabIdle
 };
 
 state = state_type.idle;
