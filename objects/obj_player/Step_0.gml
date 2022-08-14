@@ -104,3 +104,62 @@ if !keyboard_check(vk_left) and !keyboard_check(vk_right){
 		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
 	}
 }
+
+function handle_idle() {
+   //DO IDLE STUFF
+}
+
+function handle_moving() {
+   //DO MOVING STUFF
+}
+
+function handle_airborne() {
+   //DO AIRBORNE STUFF
+}
+
+function handle_grounded() {
+   //DO GROUNDED STUFF
+}
+
+function handle_leftWallGrabIdle() {
+   
+}
+
+function handle_rightWallGrabIdle() {
+   
+}
+
+function getInputs() {
+   
+}
+
+function jumpIntent() {
+   return keyboard_check(vk_space) ? 1 : 0;
+}
+
+function xIntent() {
+   if(keyboard_check(vk_right)) return 1;
+   if(keyboard_check(vk_left)) return -1;
+   return 0;
+}
+
+switch(state) {
+   case state_type.idle:
+      handle_idle();
+      break;
+   case state_type.moving:
+      handle_moving();
+      break;
+   case state_type.airborne:
+      handle_airborne();
+      break;
+   case state_type.grounded:
+      handle_grounded();
+      break;
+   case state_type.leftWallGrabIdle:
+      handle_leftWallGrabIdle();
+      break;
+   case state_type.rightWallGrabIdle:
+      handle_rightWallGrabIdle();
+      break;
+}
