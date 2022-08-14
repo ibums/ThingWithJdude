@@ -1,138 +1,104 @@
 //vertical collission
+var foundground = false;
+airborne = !place_meeting(x, y + vspeed + 1, obj_block);
 
-if !place_meeting(x, y+vspeed+1, obj_block)
-{
-    gravity = 1.25;
-	airborne = true;
-}
-else
-{
-	airborne = false;
-	if vspeed>0 {
-		gravity = 0;
-		vspeed  = 0;
-	
-		var iy = 0;
-		var foundground = false;
-		while foundground = false{
-			++iy;
-			if (place_meeting(x, y+iy, obj_block) = true){
-				y = y+iy-1;
-				foundground = true;
-			}
+if !place_meeting(x, y + vspeed + 1, obj_block) {
+   gravity = 1.25;
+} else if vspeed > 0 {
+	gravity = 0;
+	vspeed = 0;
+   foundground = false;
+	for(var iy = 0; !foundground; iy++) {
+      if place_meeting(x, y + iy, obj_block) {
+			y = y + iy - 1;
+			foundground = true;
 		}
-	}
+   }
 }
 
-if place_meeting(x, y+vspeed-1, obj_block)
-{
-	if vspeed<0{
-		vspeed  = 0;
-		var iy = 0;
-		var foundground = false;
-		while foundground = false{
-			++iy;
-			if (place_meeting(x, y-iy, obj_block) = true){
-				y = y-iy+1;
-				foundground = true;
-				jump = false;
-				}
+if place_meeting(x, y + vspeed - 1, obj_block) and vspeed < 0 {
+	vspeed = 0;
+	var iy = 0;
+	foundground = false;
+   for(var iy = 0; !foundground; iy++) {
+      if place_meeting(x, y-iy, obj_block) {
+			y = y - iy + 1;
+			foundground = true;
+			jump = false;
 		}
-	}
+   }
 }
+
+leftwall = place_meeting(x + hspeed - 6, y, obj_block);
+rightwall = place_meeting(x + hspeed + 6, y, obj_block);
+var foundwall = false;
 
 //horizontal collission
-if place_meeting(x+hspeed-6, y, obj_block){
-	leftwall = true;
-	if hspeed<0{
-		hspeed = 0;
-		var ix = 0;
-		var foundwall = false;
-		while foundwall = false{
-			++ix;
-			if (place_meeting(x-ix, y, obj_block) = true){
-				x = x-ix+5;
-				foundwall = true;
-				}
+if leftwall and hspeed < 0 {
+	hspeed = 0;
+   foundwall = false;
+   for(var ix = 0; !foundwall; ix++) {
+      if place_meeting(x - ix, y, obj_block) {
+			x = x - ix + 5;
+			foundwall = true;
 		}
-	}
+   }
 }
-else leftwall = false;
 
-if place_meeting(x+hspeed+6, y, obj_block)
-	{rightwall = true;
-	if hspeed>0{
-		hspeed = 0;
-		var ix = 0;
-		var foundwall = false;
-		while foundwall = false{
-			++ix;
-			if (place_meeting(x+ix, y, obj_block) = true){
-				x = x+ix-5;
-				foundwall = true;
-				}
-		}
-	}
+if rightwall and hspeed > 0 {
+   hspeed = 0;
+   foundwall = false;
+   for(var ix = 0; !foundwall; ix++) {
+      if place_meeting(x + ix, y, obj_block) {
+   		x = x + ix - 5;
+   		foundwall = true;
+   	}
+   }
 }
-else rightwall = false;
 
 //jump
-if (airborne=false) and keyboard_check_pressed(vk_space){
-
+if !airborne and keyboard_check_pressed(vk_space) {
 	vspeed = -3;
 	jump = true;
-
 }
 
-if (airborne=true) and (leftwall=true) and keyboard_check_pressed(vk_space){
-
-	vspeed=-20;
-	hspeed=20;
-
+if airborne and leftwall and keyboard_check_pressed(vk_space) {
+	vspeed = -20;
+	hspeed = 20;
 }
 
-if (airborne=true) and (rightwall=true) and keyboard_check_pressed(vk_space){
-
-	vspeed=-20;
-	hspeed=-20;
-
+if airborne and rightwall and keyboard_check_pressed(vk_space) {
+	vspeed = -20;
+	hspeed = -20;
 }
 
-if keyboard_check_released(vk_space){
+if keyboard_check_released(vk_space) {
 	jump = false;
-	i = 1;
+	jump_height_modifier = 1;
 }
 
-if jump == true{
-	if keyboard_check(vk_space){
-		if i<30{
-			vspeed = vspeed-7/i;
-			++i;
-		}
-	}
+if jump and keyboard_check(vk_space) and jump_height_modifier < 30 {
+	vspeed = vspeed - (7 / jump_height_modifier);
+	++jump_height_modifier;
 }
 
 //movement left / right
 // extra speed when moving in the opposite direction to speed?
-if keyboard_check(vk_left) and leftwall = false{
-	if hspeed > -10{ 
-		hspeed = hspeed-_acceleration;
-		}
+if keyboard_check(vk_left) and !leftwall and hspeed > -10{
+	hspeed = hspeed-_acceleration;
 }
 
-if keyboard_check(vk_right) and rightwall = false{
-	if hspeed < 10{ 
-		hspeed = hspeed+_acceleration;
-		}
+if keyboard_check(vk_right) and !rightwall and hspeed < 10{
+   hspeed = hspeed+_acceleration;
 }
 
 if !keyboard_check(vk_left) and !keyboard_check(vk_right){
-	if hspeed > 0{
-		hspeed = hspeed-_friction;
-		hspeed = hspeed-_friction<0 ? 0 : hspeed-_friction;
+	if hspeed > 0 {
+		hspeed = hspeed - _friction;
+		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
 	}
-	if hspeed < 0{
-		hspeed = hspeed+_friction;
-		hspeed = hspeed+_friction>0 ? 0 : hspeed+_friction;
+	if hspeed < 0 {
+		hspeed = hspeed + _friction;
+		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
 	}
 }
