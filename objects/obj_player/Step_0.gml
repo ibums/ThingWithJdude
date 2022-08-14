@@ -36,7 +36,7 @@ rightwall = place_meeting(x + hspeed + horzBuffer + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 {
+if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -47,7 +47,7 @@ if leftwall and hspeed < 0 {
    }
 }
 
-if rightwall and hspeed > 0 {
+if rightwall and hspeed and instance_place(x, y, obj_diagonal_up) = noone > 0 {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -104,3 +104,20 @@ if !keyboard_check(vk_left) and !keyboard_check(vk_right){
 		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
 	}
 }
+
+//taking out the buffer temporarily from the
+//rightslope line in case we don't need it
+var _slopeid = instance_place(x + hspeed, y, obj_diagonal_up)
+if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left {
+
+//find point of collission on triangle (_xcollission, _ycollission)
+var _y=(
+	((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
+	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
+	);
+y = _y-16;
+gravity=0;
+}
+//!!! ibums read this !!!
+// make a new jump for when you have leftwall and rightwall
+//that just jumps you straight up or maybe slides you up?
