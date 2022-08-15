@@ -1,153 +1,158 @@
 //vertical collission
-var foundground = false;
+
 airborne = !place_meeting(x, y + vspeed + 1, obj_block);
 
-//Why do we need the +1 / -1???
-if !place_meeting(x, y + vspeed + 1, obj_block) {
+var movingPlatform = instance_place(x, y + max(1,vspeed), obj_moving_platform);
+if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top) {
+   if(vspeed > 0) {
+      while(!place_meeting(x, y + sign(vspeed), obj_moving_platform)) {
+         y += sign(vspeed);
+      }
+      gravity = 0;
+      vspeed = 0;
+      state = state_type.grounded;
+   }
+   x+= movingPlatform.moveX;
+   y+= movingPlatform.moveY;
+}
+
+if !place_meeting(x, y + vspeed + 1, obj_block) and !place_meeting(x, y + vspeed + 1, obj_moving_platform){
    gravity = 1.25;
 } else if vspeed > 0 {
 	gravity = 0;
 	vspeed = 0;
-   foundground = false;
+   var foundground = false;
 	for(var iy = 0; !foundground; iy++) {
       if place_meeting(x, y + iy, obj_block) {
 			y = y + iy - 1;
 			foundground = true;
+         state = state_type.grounded;
 		}
    }
-}
-
-if place_meeting(x, y + vspeed - 1, obj_block) and vspeed < 0 {
+} else if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 	vspeed = 0;
 	var iy = 0;
-	foundground = false;
-   for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x, y-iy, obj_block) {
+	var foundCeiling = false;
+   for(var iy = 0; !foundCeiling; iy++) {
+      if place_meeting(x, y - iy, obj_block) {
 			y = y - iy + 1;
-			foundground = true;
-			jump = false;
+			foundCeiling = true;
+         state = state_type.airborne;
 		}
    }
 }
 
-//Why do we need the +1 / -1???
-leftwall = place_meeting(x + hspeed - horzBuffer - 1, y, obj_block);
-rightwall = place_meeting(x + hspeed + horzBuffer + 1, y, obj_block);
+leftwall = place_meeting(x - abs(hspeed) - 1, y, obj_block);
+rightwall = place_meeting(x + abs(hspeed) + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone{
+if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
       if place_meeting(x - ix, y, obj_block) {
-			x = x - ix + horzBuffer;
+			x = x - ix + 1;
 			foundwall = true;
 		}
    }
 }
 
-if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone > 0{
+if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
       if place_meeting(x + ix, y, obj_block) {
-   		x = x + ix - horzBuffer;
+   		x = x + ix - 1;
    		foundwall = true;
    	}
    }
 }
 
-//jump
-if !airborne and keyboard_check_pressed(vk_space) {
-	vspeed = -3;
-	jump = true;
-}
-
-if airborne and leftwall and keyboard_check_pressed(vk_space) {
-	vspeed = -20;
-	hspeed = 20;
-}
-
-if airborne and rightwall and keyboard_check_pressed(vk_space) {
-	vspeed = -20;
-	hspeed = -20;
-}
-
-if keyboard_check_released(vk_space) {
-	jump = false;
-	jump_height_modifier = 1;
-}
-
-if jump and keyboard_check(vk_space) and jump_height_modifier < 30 {
-	vspeed = vspeed - (7 / jump_height_modifier);
-	++jump_height_modifier;
-}
-
-//movement left / right
-// extra speed when moving in the opposite direction to speed?
-if keyboard_check(vk_left) and !leftwall and hspeed > -10{
-	hspeed = hspeed-_acceleration;
-}
-
-if keyboard_check(vk_right) and !rightwall and hspeed < 10{
-   hspeed = hspeed+_acceleration;
-}
-
-if !keyboard_check(vk_left) and !keyboard_check(vk_right){
-	if hspeed > 0 {
-		hspeed = hspeed - _friction;
-		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
-	}
-	if hspeed < 0 {
-		hspeed = hspeed + _friction;
-		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
-	}
-}
-//taking out the buffer temporarily from the
-//rightslope line in case we don't need it
-var _slopeid = instance_place(x + hspeed, y, obj_diagonal_up)
-if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left {
-
-//find point of collission on triangle (_xcollission, _ycollission)
-var _y=(
-	((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
-	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
-	);
-y = _y-16;
-gravity=0;
-}
-//!!! ibums read this !!!
-// make a new jump for when you have leftwall and rightwall
-//that just jumps you straight up or maybe slides you up?
-
 
 function handle_idle() {
    //DO IDLE STUFF
+   handle_grounded();
 }
 
-function handle_moving() {
-   //DO MOVING STUFF
+function handle_wallGrabIdle() {
+   //TODO: implement if needed
+}
+
+function handle_moving_ground() {
+   //Update if we want to have air movement different from ground movement
+   if xIntent() == -1 and !leftwall and hspeed > -10 {
+   	hspeed = hspeed - _acceleration;
+   }
+
+   if xIntent() == 1 and !rightwall and hspeed < 10 {
+      hspeed = hspeed + _acceleration;
+   }
+
+   if xIntent() == 0 {
+   	if hspeed > 0 {
+   		hspeed = hspeed - _friction;
+   		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
+   	}
+      
+   	if hspeed < 0 {
+   		hspeed = hspeed + _friction;
+   		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
+   	}
+   }
+}
+
+function handle_moving_air() {
+   //Update if we want to have air movement different from ground movement
+   if xIntent() == -1 and !leftwall and hspeed > -10 {
+   	hspeed = hspeed - _acceleration;
+   }
+
+   if xIntent() == 1 and !rightwall and hspeed < 10 {
+      hspeed = hspeed + _acceleration;
+   }
+
+   if xIntent() == 0 {
+   	if hspeed > 0 {
+   		hspeed = hspeed - _friction;
+   		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
+   	}
+      
+   	if hspeed < 0 {
+   		hspeed = hspeed + _friction;
+   		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
+   	}
+   }
 }
 
 function handle_airborne() {
-   //DO AIRBORNE STUFF
+   jump_height_modifier = 1;
+   if (rightwall or leftwall) and jumpIntent() {
+   	vspeed = -20;
+   	hspeed = rightwall ? -20 : 20;
+   }
+   handle_moving_air();
 }
 
 function handle_grounded() {
-   //DO GROUNDED STUFF
+   if(jumpIntent() == 1) {
+      vspeed = -3;
+	   state = state_type.jumping;
+   }
+   
+   handle_moving_ground();
 }
 
-function handle_leftWallGrabIdle() {
-   
-}
 
-function handle_rightWallGrabIdle() {
-   
-}
-
-function getInputs() {
-   
+function handle_jumping() {
+   if jumpIntent() == 1 and jump_height_modifier < 30 {
+   	vspeed = vspeed - (7 / jump_height_modifier);
+   	++jump_height_modifier;
+   } else {
+      state = state_type.airborne;
+   	jump_height_modifier = 1;
+   }
+   handle_moving_air();
 }
 
 function jumpIntent() {
@@ -164,8 +169,8 @@ switch(state) {
    case state_type.idle:
       handle_idle();
       break;
-   case state_type.moving:
-      handle_moving();
+   case state_type.jumping:
+      handle_jumping();
       break;
    case state_type.airborne:
       handle_airborne();
@@ -173,10 +178,25 @@ switch(state) {
    case state_type.grounded:
       handle_grounded();
       break;
-   case state_type.leftWallGrabIdle:
-      handle_leftWallGrabIdle();
-      break;
-   case state_type.rightWallGrabIdle:
-      handle_rightWallGrabIdle();
+   case state_type.wallGrabIdle:
+      handle_wallGrabIdle();
       break;
 }
+
+//taking out the buffer temporarily from the
+//rightslope line in case we don't need it
+var _slopeid = instance_place(x + hspeed, y, obj_diagonal_up)
+if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
+
+//find point of collission on triangle (_xcollission, _ycollission)
+var _y=(
+	((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
+	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
+	);
+y = _y-16;
+gravity = 0;
+state = state_type.grounded;
+}
+//!!! ibums read this !!!
+// make a new jump for when you have leftwall and rightwall
+//that just jumps you straight up or maybe slides you up?
