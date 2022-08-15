@@ -2,28 +2,33 @@
 
 airborne = !place_meeting(x, y + vspeed + 1, obj_block);
 
-var movingPlatform = instance_place(x, y + max(1,vspeed), obj_moving_platform);
-if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top) {
+//Check for moving platform below character
+var movingPlatform = instance_place(x, y + max(1, vspeed), obj_moving_platform);
+if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
    if(vspeed > 0) {
       while(!place_meeting(x, y + sign(vspeed), obj_moving_platform)) {
          y += sign(vspeed);
       }
+      y = round(y);
       gravity = 0;
       vspeed = 0;
-      state = state_type.grounded;
    }
+   state = state_type.grounded;
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
 }
 
-if !place_meeting(x, y + vspeed + 1, obj_block) and !place_meeting(x, y + vspeed + 1, obj_moving_platform){
+//Check if we should be falling
+else if !place_meeting(x, y + max(1, vspeed) + 1, obj_block) {
    gravity = 1.25;
-} else if vspeed > 0 {
+} 
+//If not falling, snap ourselves to ground
+else if vspeed > 0 {
 	gravity = 0;
 	vspeed = 0;
    var foundground = false;
 	for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x, y + iy, obj_block) {
+      if place_meeting(x, y + iy, obj_collision) {
 			y = y + iy - 1;
 			foundground = true;
          state = state_type.grounded;
@@ -31,6 +36,7 @@ if !place_meeting(x, y + vspeed + 1, obj_block) and !place_meeting(x, y + vspeed
    }
 }
 
+//moving platforms we want to be able to jump through the bottom
 if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 	vspeed = 0;
 	var iy = 0;
@@ -39,7 +45,6 @@ if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
       if place_meeting(x, y - iy, obj_block) {
 			y = y - iy + 1;
 			foundCeiling = true;
-         state = state_type.airborne;
 		}
    }
 }
@@ -140,7 +145,6 @@ function handle_grounded() {
    if(jumpIntent() == 1) {
       vspeed = -3;
 	   state = state_type.jumping;
-      print("GROUNDED => JUMPING");
    }
    
    handle_moving_ground();
@@ -154,7 +158,6 @@ function handle_jumping() {
    } else {
       state = state_type.airborne;
    	jump_height_modifier = 1;
-      print("JUMP RELEASED");
    }
    handle_moving_air();
 }
@@ -204,5 +207,3 @@ state = state_type.grounded;
 //!!! ibums read this !!!
 // make a new jump for when you have leftwall and rightwall
 //that just jumps you straight up or maybe slides you up?
-
-print(state);
