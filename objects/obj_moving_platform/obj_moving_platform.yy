@@ -33,8 +33,8 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "Objects",
-    "path": "folders/Objects.yy",
+    "name": "moving_platform",
+    "path": "folders/Objects/blocks/moving_platform.yy",
   },
   "resourceVersion": "1.0",
   "name": "obj_moving_platform",

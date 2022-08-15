@@ -1,3 +1,4 @@
+event_inherited();
 jump = false;
 jump_height_modifier = 1;
 _friction = 0.5;
@@ -9,14 +10,13 @@ leftwall = false;
 rightwall = false;
 horzBuffer = 1;
 
-enum state_type {
-   idle,
-   grounded,
-   jumping,
-   moving,
-   airborne,
-   dead,
-   wallGrabIdle
-};
+//various ability vars
+maxGrappleLen = 30;
+curGrappleLen = 0;
+tongueInst = noone;
 
-state = state_type.idle;
+aimX = 0;
+aimY = 0;
+grappleEndRadius = 16;
+
+state = pointer_null;

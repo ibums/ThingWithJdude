@@ -97,8 +97,8 @@
   ],
   "nineSlice": null,
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "level_objects",
+    "path": "folders/Sprites/level_objects.yy",
   },
   "resourceVersion": "1.0",
   "name": "spr_checkpoint_spawn",

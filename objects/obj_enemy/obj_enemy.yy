@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spr_diagonal_up",
-    "path": "sprites/spr_diagonal_up/spr_diagonal_up.yy",
+    "name": "spr_enemy",
+    "path": "sprites/spr_enemy/spr_enemy.yy",
   },
   "solid": false,
   "visible": true,
@@ -25,11 +25,11 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "blocks",
-    "path": "folders/Objects/blocks.yy",
+    "name": "obstacles",
+    "path": "folders/Objects/obstacles.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_diagonal_up",
+  "name": "obj_enemy",
   "tags": [],
   "resourceType": "GMObject",
 }

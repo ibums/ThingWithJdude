@@ -1,3 +1,4 @@
+//Handle corner case (literally) when colliding with the corner of a block
 if (x > other.x and y > other.y) {
    var escapedWall = false;  
    for(var ix = 0; !escapedWall; ix++) {
@@ -27,7 +28,7 @@ else if (x > other.x and y < other.y) {
          x += iy;
 			y -= iy;
 			escapedFloor = true;
-         state = state_type.grounded;
+         state = handle_grounded;
 		}
    }
 } 
@@ -38,7 +39,7 @@ else if (x < other.x and y < other.y) {
          x -= iy;
    		y -= iy;
    		escapedCeiling = true;
-         state = state_type.airborne;
+         state = handle_airborne;
    	}
    }
 }

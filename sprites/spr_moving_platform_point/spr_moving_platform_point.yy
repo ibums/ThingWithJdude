@@ -69,8 +69,8 @@
   ],
   "nineSlice": null,
   "parent": {
-    "name": "Sprites",
-    "path": "folders/Sprites.yy",
+    "name": "moving_platform",
+    "path": "folders/Sprites/blocks/moving_platform.yy",
   },
   "resourceVersion": "1.0",
   "name": "spr_moving_platform_point",

@@ -1,7 +1,7 @@
 {
   "spriteId": {
-    "name": "spr_diagonal_up",
-    "path": "sprites/spr_diagonal_up/spr_diagonal_up.yy",
+    "name": "spr_tongue",
+    "path": "sprites/spr_tongue/spr_tongue.yy",
   },
   "solid": false,
   "visible": true,
@@ -21,15 +21,19 @@
   "physicsStartAwake": true,
   "physicsKinematic": false,
   "physicsShapePoints": [],
-  "eventList": [],
+  "eventList": [
+    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":8,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"isDnD":false,"eventNum":0,"eventType":3,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+  ],
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "blocks",
-    "path": "folders/Objects/blocks.yy",
+    "name": "player",
+    "path": "folders/Objects/player.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_diagonal_up",
+  "name": "obj_tongue",
   "tags": [],
   "resourceType": "GMObject",
 }
