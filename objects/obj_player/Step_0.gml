@@ -29,7 +29,9 @@ if !place_meeting(x, y + vspeed + 1, obj_block) and !place_meeting(x, y + vspeed
          state = state_type.grounded;
 		}
    }
-} else if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
+}
+
+if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 	vspeed = 0;
 	var iy = 0;
 	var foundCeiling = false;
@@ -138,6 +140,7 @@ function handle_grounded() {
    if(jumpIntent() == 1) {
       vspeed = -3;
 	   state = state_type.jumping;
+      print("GROUNDED => JUMPING");
    }
    
    handle_moving_ground();
@@ -151,6 +154,7 @@ function handle_jumping() {
    } else {
       state = state_type.airborne;
    	jump_height_modifier = 1;
+      print("JUMP RELEASED");
    }
    handle_moving_air();
 }
@@ -194,9 +198,11 @@ var _y=(
 	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
 	);
 y = _y-16;
-gravity = 0;
+gravity=0;
 state = state_type.grounded;
 }
 //!!! ibums read this !!!
 // make a new jump for when you have leftwall and rightwall
 //that just jumps you straight up or maybe slides you up?
+
+print(state);
