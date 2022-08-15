@@ -45,28 +45,13 @@ if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 			y = y - iy + 1;
 			foundCeiling = true;
 		}
+   }
+}
    
-   //taking into account the slope
-else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
-	//find point of collission on triangle
-	var y_top_slope=(
-		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
-		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
-		);
-//		if (y+vspeed>=y_top_slope-(sprite_height/2)-1) I don't know why I added this, 
-//but I'm leaving it here in case it ends up being important
-      {
-   		y = y_top_slope-(sprite_height/2);
-         vspeed = 0;
-   		gravity=0;
-   		state = state_type.grounded;
-
-		}
-	}
    
-
-//sloped block vertical collision
-
+   
+   
+   //sloped block vertical collision
 var _slopeid = instance_place(x + hspeed, y + vspeed + 1, obj_diagonal_up)
 
 //treating as normal ground at top
@@ -83,7 +68,7 @@ if place_meeting(x, y + vspeed + 1, _slopeid) and x > _slopeid.bbox_right and vs
       }
    }
 }
-   
+
    //taking into account the slope
 else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
 	//find point of collission on triangle
@@ -101,6 +86,14 @@ else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left an
 
 		}
 	}
+   
+
+
+
+
+
+   
+
    
 
 leftwall = place_meeting(x - abs(hspeed) - 1, y, obj_block); 
@@ -252,4 +245,3 @@ switch(state) {
       handle_wallGrabIdle();
       break;
 }
-
