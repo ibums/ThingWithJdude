@@ -105,6 +105,7 @@ else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left an
 
 		}
 	}
+
 #endregion collision
 
 #region movement
@@ -205,9 +206,10 @@ handle_jumping = function () {
    	vspeed = vspeed - (7 / jump_height_modifier);
    	++jump_height_modifier;
    } else if jumpIntent() == 0 {
-      state = handle_jumping;
+      state = handle_airborne;
    	jump_height_modifier = 1;
    }
+   
    handle_moving_air();
 }
 
@@ -243,10 +245,10 @@ handle_grapple = function() {
 
 #region inputIntents
 function jumpIntent() {
-   if keyboard_check_pressed(vk_space) == true{
+   if (keyboard_check_pressed(vk_space)) {
       return 1;
-      }
-   else if keyboard_check(vk_space) == true{
+   }
+   else if (keyboard_check(vk_space)) {
       return 2;
    }
    else return 0;
