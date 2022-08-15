@@ -1,5 +1,4 @@
 //vertical collission
-
 airborne = !place_meeting(x, y + vspeed + 1, obj_block);
 
 //Check for moving platform below character
@@ -23,7 +22,7 @@ else if !place_meeting(x, y + max(1, vspeed) + 1, obj_block) {
    gravity = 1.25;
 } 
 //If not falling, snap ourselves to ground
-else if vspeed > 0 {
+else if vspeed >= 0 {
 	gravity = 0;
 	vspeed = 0;
    var foundground = false;
@@ -46,15 +45,70 @@ if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 			y = y - iy + 1;
 			foundCeiling = true;
 		}
+   
+   //taking into account the slope
+else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
+	//find point of collission on triangle
+	var y_top_slope=(
+		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
+		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
+		);
+//		if (y+vspeed>=y_top_slope-(sprite_height/2)-1) I don't know why I added this, 
+//but I'm leaving it here in case it ends up being important
+      {
+   		y = y_top_slope-(sprite_height/2);
+         vspeed = 0;
+   		gravity=0;
+   		state = state_type.grounded;
+
+		}
+	}
+   
+
+//sloped block vertical collision
+
+var _slopeid = instance_place(x + hspeed, y + vspeed + 1, obj_diagonal_up)
+
+//treating as normal ground at top
+
+if place_meeting(x, y + vspeed + 1, _slopeid) and x > _slopeid.bbox_right and vspeed >= 0{
+   gravity = 0;
+   vspeed = 0;
+   var foundground = false;
+   for(var iy = 0; !foundground; iy++) {
+      if place_meeting(x, y + iy, _slopeid) {
+   		y = y + iy-1;
+   		foundground = true;
+         state = state_type.grounded;
+      }
    }
 }
+   
+   //taking into account the slope
+else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
+	//find point of collission on triangle
+	var y_top_slope=(
+		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
+		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
+		);
+//		if (y+vspeed>=y_top_slope-(sprite_height/2)-1) I don't know why I added this, 
+//but I'm leaving it here in case it ends up being important
+      {
+   		y = y_top_slope-(sprite_height/2);
+         vspeed = 0;
+   		gravity=0;
+   		state = state_type.grounded;
 
-leftwall = place_meeting(x - abs(hspeed) - 1, y, obj_block);
+		}
+	}
+   
+
+leftwall = place_meeting(x - abs(hspeed) - 1, y, obj_block); 
 rightwall = place_meeting(x + abs(hspeed) + 1, y, obj_block);
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
+if leftwall and hspeed < 0 and place_meeting(x, y, obj_diagonal_up) = false {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -65,7 +119,7 @@ if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
    }
 }
 
-if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone {
+if rightwall and hspeed > 0 and place_meeting(x, y, obj_diagonal_up) = false {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -75,7 +129,6 @@ if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone {
    	}
    }
 }
-
 
 function handle_idle() {
    //DO IDLE STUFF
@@ -134,28 +187,32 @@ function handle_moving_air() {
 
 function handle_airborne() {
    jump_height_modifier = 1;
-   if (rightwall or leftwall) and jumpIntent() {
+   if (rightwall xor leftwall) and jumpIntent() == 1 {
    	vspeed = -20;
    	hspeed = rightwall ? -20 : 20;
+   }
+   else if (rightwall and leftwall) and jumpIntent() == 1{
+      vspeed = -25;
    }
    handle_moving_air();
 }
 
 function handle_grounded() {
    if(jumpIntent() == 1) {
+      jump_height_modifier = 1;
       vspeed = -3;
 	   state = state_type.jumping;
    }
-   
+
    handle_moving_ground();
 }
 
 
 function handle_jumping() {
-   if jumpIntent() == 1 and jump_height_modifier < 30 {
+   if jumpIntent() == 2 and jump_height_modifier < 30 {
    	vspeed = vspeed - (7 / jump_height_modifier);
    	++jump_height_modifier;
-   } else {
+   } else if jumpIntent() == 0 {
       state = state_type.airborne;
    	jump_height_modifier = 1;
    }
@@ -163,7 +220,13 @@ function handle_jumping() {
 }
 
 function jumpIntent() {
-   return keyboard_check(vk_space) ? 1 : 0;
+   if keyboard_check_pressed(vk_space) == true{
+      return 1;
+      }
+   else if keyboard_check(vk_space) == true{
+      return 2;
+   }
+   else return 0;
 }
 
 function xIntent() {
@@ -190,20 +253,3 @@ switch(state) {
       break;
 }
 
-//taking out the buffer temporarily from the
-//rightslope line in case we don't need it
-var _slopeid = instance_place(x + hspeed, y, obj_diagonal_up)
-if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
-
-//find point of collission on triangle (_xcollission, _ycollission)
-var _y=(
-	((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
-	*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
-	);
-y = _y-16;
-gravity=0;
-state = state_type.grounded;
-}
-//!!! ibums read this !!!
-// make a new jump for when you have leftwall and rightwall
-//that just jumps you straight up or maybe slides you up?
