@@ -16,6 +16,6 @@ tongueInst = noone;
 
 aimX = 0;
 aimY = 0;
-grappleEndRadius = 16;
+grappleEndRadius = sprite_width;
 
 state = pointer_null;

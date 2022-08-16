@@ -101,9 +101,8 @@ else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left an
          vspeed = 0;
    		gravity=0;
    		state = handle_grounded;
-
-		}
 	}
+}
 
 #endregion collision
 
@@ -170,7 +169,7 @@ handle_airborne = function () {
    if (rightwall xor leftwall) and jumpIntent() == 1 {
    	vspeed = -20;
    	hspeed = rightwall ? -20 : 20;
-   } else if (rightwall and leftwall) and jumpIntent() == 1{
+   } else if (rightwall and leftwall) and jumpIntent() == 1 {
       vspeed = -25;
    } else if(grappleIntent() == 1) {
       //When grappling in the air, we want to skip handling air movement and instead,
@@ -183,6 +182,9 @@ handle_airborne = function () {
 }
 
 handle_grounded = function() {
+   if(tongueInst != noone) {
+      state = handle_grapple;
+   }
    if(jumpIntent() == 1) {
       jump_height_modifier = 1;
       vspeed = -3;
@@ -215,19 +217,18 @@ handle_jumping = function () {
 handle_grapple = function() {
    aimX = mouse_x;
    aimY = mouse_y;
-   if(tongueInst == noone) {
-      if(make_tongue() == noone) {
-         //TODO save previous state and use it here
-         state = handle_grounded;
-         return;
-      }
+   print("GRAPPLE");
+   if(tongueInst == noone && make_tongue() == noone) {
+      //TODO save previous state and use it here
+      state = handle_grounded;
+      return;
    }
    
    if(!tongueInst.reachedDestination) {
       //Pull ourselves to the destination
      // handle_moving_air();
    } else {
-     //Reached enemy, start pulling ourselves to enemy 
+      //Reached enemy, start pulling ourselves to enemy 
       var tongue_found = collision_circle(x, y, grappleEndRadius, tongueInst, true, true);
       if(tongue_found == noone) {
          print("NOONE");
@@ -273,6 +274,7 @@ function make_tongue() {
    if(ret[0] == noone) {
       return noone; //Do nothing
    }
+   
    tongueInst = instance_create_layer(x, y, "Instances", obj_tongue);
    with (tongueInst) {    
        owner_instance = other.id;
