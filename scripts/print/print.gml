@@ -15,5 +15,5 @@ function print(){
       }
    }
 
-   show_debug_message(final_text);
+   show_debug_message(string(current_time) + " " + final_text);
 }
