@@ -45,12 +45,12 @@ if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
    }
 }
 
-leftwall = place_meeting(x - abs(hspeed) - 1, y, obj_block);
-rightwall = place_meeting(x + abs(hspeed) + 1, y, obj_block);
+check_for_walls();
+   
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
+if leftwall and hspeed <= 0 and place_meeting(x, y, obj_diagonal_up) = false {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -61,7 +61,7 @@ if leftwall and hspeed < 0 and instance_place(x, y, obj_diagonal_up) = noone {
    }
 }
 
-if rightwall and hspeed > 0 and instance_place(x, y, obj_diagonal_up) = noone {
+if rightwall and hspeed >= 0 and place_meeting(x, y, obj_diagonal_up) = false {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -95,10 +95,9 @@ else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left an
 		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
 		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
 		);
-//		if (y+vspeed>=y_top_slope-(sprite_height/2)-1) I don't know why I added this, 
-//but I'm leaving it here in case it ends up being important
+   if (y+vspeed>=y_top_slope-(sprite_height/2)-1)
       {
-   		y = y_top_slope-(sprite_height/2);
+   		y = y_top_slope-(sprite_height/2)-1;
          vspeed = 0;
    		gravity=0;
    		state = handle_grounded;
@@ -286,5 +285,4 @@ if(state == pointer_null) {
    state = handle_idle;
 }
 #endregion
-
 state();

@@ -6,8 +6,7 @@ _acceleration = 1.5;
 airborne = false;
 
 //colision vars
-leftwall = false;
-rightwall = false;
+check_for_walls();
 horzBuffer = 1;
 
 //various ability vars

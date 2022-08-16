@@ -32,7 +32,7 @@ else if (x > other.x and y < other.y) {
 		}
    }
 } 
-else if (x < other.x and y < other.y) {
+else if (x < other.x and y < other.y) and place_meeting(x, y, obj_diagonal_up) = false {
    var escapedCeiling = false;
    for(var iy = 0; !escapedCeiling; iy++) {
       if !place_meeting(x - iy, y - iy, obj_block) {
