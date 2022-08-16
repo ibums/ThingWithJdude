@@ -1,5 +1,5 @@
 #region collision
-var movingPlatform = instance_place(x, y + max(1, vspeed), obj_moving_platform);
+var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
 if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
    if(vspeed > 0) {
       while(!place_meeting(x, y + sign(vspeed), obj_moving_platform)) {
@@ -15,7 +15,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
 }
 
 //Check if we should be falling
-else if !place_meeting(x, y + max(1, vspeed) + 1, obj_block) {
+else if !place_meeting(x, y + max(0, vspeed) + 1, obj_block) {
    gravity = 1.25;
 } 
 //If not falling, snap ourselves to ground
@@ -46,11 +46,11 @@ if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
 }
 
 check_for_walls();
-   
+ 
 var foundwall = false;
 
 //horizontal collission
-if leftwall and hspeed <= 0 and place_meeting(x, y, obj_diagonal_up) = false {
+if leftwall and hspeed <= 0 {
 	hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -61,7 +61,7 @@ if leftwall and hspeed <= 0 and place_meeting(x, y, obj_diagonal_up) = false {
    }
 }
 
-if rightwall and hspeed >= 0 and place_meeting(x, y, obj_diagonal_up) = false {
+if rightwall and hspeed >= 0 {
    hspeed = 0;
    foundwall = false;
    for(var ix = 0; !foundwall; ix++) {
@@ -72,15 +72,18 @@ if rightwall and hspeed >= 0 and place_meeting(x, y, obj_diagonal_up) = false {
    }
 }
 //sloped block vertical collision
+
 var _slopeid = instance_place(x + hspeed, y + vspeed + 1, obj_diagonal_up)
+if _slopeid != noone print(y, , _slopeid.bbox_top);
 
 //treating as normal ground at top
-if place_meeting(x, y + vspeed + 1, _slopeid) and x > _slopeid.bbox_right and vspeed >= 0 {
+
+if place_meeting(x+hspeed, y + vspeed + 1, _slopeid) and x+hspeed > _slopeid.bbox_right and vspeed >= 0 {
    gravity = 0;
    vspeed = 0;
    var foundground = false;
    for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x, y + iy, _slopeid) {
+      if place_meeting(x+hspeed, y + iy, _slopeid) {
    		y = y + iy-1;
    		foundground = true;
          state = handle_grounded;
@@ -90,14 +93,19 @@ if place_meeting(x, y + vspeed + 1, _slopeid) and x > _slopeid.bbox_right and vs
 
    //taking into account the slope
 else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
+   
+   //use this ratio to adjust velocity?
+   var slope_ratio = _slopeid.sprite_width/_slopeid.sprite_height;
 	//find point of collission on triangle
-	var y_top_slope=(
+   
+	var y_top_slope=(round(
 		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
 		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
-		);
+		));
    if (y+vspeed>=y_top_slope-(sprite_height/2)-1)
       {
-   		y = y_top_slope-(sprite_height/2)-1;
+         
+   		y = max(y_top_slope-sprite_height/2-1, _slopeid.bbox_top-sprite_height/2-1);
          vspeed = 0;
    		gravity=0;
    		state = handle_grounded;
