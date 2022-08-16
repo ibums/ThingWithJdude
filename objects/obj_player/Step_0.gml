@@ -2,8 +2,8 @@
 var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
 if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
    if(vspeed > 0) {
-      while(!place_meeting(x, y + sign(vspeed), obj_moving_platform)) {
-         y += sign(vspeed);
+      while(!place_meeting(x, y + 1, obj_moving_platform)) {
+         y++;
       }
       y = round(y);
       gravity = 0;
@@ -18,6 +18,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
 else if !place_meeting(x, y + max(0, vspeed) + 1, obj_block) {
    gravity = 1.25;
 } 
+
 //If not falling, snap ourselves to ground
 else if vspeed > 0 {
 	gravity = 0;
@@ -185,11 +186,16 @@ handle_airborne = function () {
       state = handle_grapple;
       return;
    }
-
+   
+   if(tongueInst != noone) {
+      handle_grapple();
+   }
+   
    handle_moving_air();
 }
 
 handle_grounded = function() {
+   grapple_charge = 1;
    if(tongueInst != noone) {
       state = handle_grapple;
    }
@@ -209,7 +215,6 @@ handle_grounded = function() {
    handle_moving_ground();
 }
 
-
 handle_jumping = function () {
    if jumpIntent() == 2 and jump_height_modifier < 30 {
    	vspeed = vspeed - (7 / jump_height_modifier);
@@ -218,7 +223,7 @@ handle_jumping = function () {
       state = handle_airborne;
    	jump_height_modifier = 1;
    }
-   
+
    handle_moving_air();
 }
 
@@ -226,6 +231,7 @@ handle_grapple = function() {
    aimX = mouse_x;
    aimY = mouse_y;
    print("GRAPPLE");
+   grapple_charge = 0;
    if(tongueInst == noone && make_tongue() == noone) {
       //TODO save previous state and use it here
       state = handle_grounded;
@@ -237,18 +243,23 @@ handle_grapple = function() {
      // handle_moving_air();
    } else {
       //Reached enemy, start pulling ourselves to enemy 
-      var tongue_found = collision_circle(x, y, grappleEndRadius, tongueInst, true, true);
-      if(tongue_found == noone) {
-         print("NOONE");
-         move_towards_point(tongueInst.destinationX, tongueInst.destinationY, 30);
-      } else {      
-         print("DESTROY");
+      if(distance_to_point(tongueInst.x, tongueInst.y) > grappleEndRadius) {
+         move_towards_point(tongueInst.destinationX, tongueInst.destinationY, grappleSpeed);
+      } else {
         instance_destroy(tongueInst);
         tongueInst = noone;
         state = handle_airborne;
       }
    }
 }
+
+handle_attack = function() {
+   attackInst = instance_create_layer(x + (facing * meleeOffset) + hspeed, y + vspeed, "Instances", obj_melee_hitbox);
+   with (attackInst) {    
+       player_inst = other.id;
+   }
+}
+
 #endregion stateHandlers
 
 #region inputIntents
@@ -272,11 +283,16 @@ function grappleIntent() {
    if(mouse_check_button_pressed(mb_left)) return 1;
    else return 0;
 }
+
+function meleeIntent() {
+   if(mouse_check_button_pressed(mb_right)) return 1;
+   else return 0;
+}
 #endregion inputIntents
 
 #region helperFunctions
 function make_tongue() {
-   var ret = collision_line_point(x, y,  other.aimX, other.aimY, obj_collision, true, true);
+   var ret = collision_line_point(x, y,  other.aimX, other.aimY, obj_enemy, true, true);
    
    //Dont shoot tongue if missed
    if(ret[0] == noone) {
@@ -291,8 +307,20 @@ function make_tongue() {
    }
 }
 
+function refresh_grapple() {
+   grapple_charge = 1;
+}
+
 if(state == pointer_null) {
    state = handle_idle;
 }
 #endregion
 state();
+
+if(xIntent() != 0) {
+   facing = xIntent();
+}
+
+if(meleeIntent()) {
+   handle_attack();
+}
