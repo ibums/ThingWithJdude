@@ -12,12 +12,13 @@ horzBuffer = 1;
 //various ability vars
 maxGrappleLen = 30;
 curGrappleLen = 0;
-grappleSpeed = 20;
+grappleSpeed = 15;
 tongueInst = noone;
 attackInst = noone;
 
 facing = 1;
-meleeOffset = sprite_width;
+meleeOffsetX = sprite_width / 2+sprite_get_width(spr_melee_hitbox);
+meleeOffsetY = sprite_height / 2;
 
 aimX = 0;
 aimY = 0;

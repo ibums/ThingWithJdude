@@ -20,6 +20,7 @@
     {"id":{"name":"obj_diagonal_up","path":"objects/obj_diagonal_up/obj_diagonal_up.yy",},"order":6,},
     {"id":{"name":"obj_moving_platform","path":"objects/obj_moving_platform/obj_moving_platform.yy",},"order":7,},
     {"id":{"name":"obj_block","path":"objects/obj_block/obj_block.yy",},"order":1,},
+    {"id":{"name":"inputIntents","path":"scripts/inputIntents/inputIntents.yy",},"order":3,},
     {"id":{"name":"spr_enemy","path":"sprites/spr_enemy/spr_enemy.yy",},"order":0,},
     {"id":{"name":"spr_moving_platform_point","path":"sprites/spr_moving_platform_point/spr_moving_platform_point.yy",},"order":0,},
     {"id":{"name":"spr_stand_in2","path":"sprites/spr_stand_in2/spr_stand_in2.yy",},"order":2,},

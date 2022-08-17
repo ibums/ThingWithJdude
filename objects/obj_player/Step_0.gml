@@ -1,91 +1,106 @@
 #region collision
-var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
-if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top+1) {
+
+function set_grounded() {
+   gravity = 0;
+   vspeed = 0;
+   state = handle_grounded;
+}
+
+function try_snap_to_object_ground(object) {
    if(vspeed > 0) {
-      while(!place_meeting(x, y + 1, obj_moving_platform)) {
+      while(!place_meeting(x, y + 1, object)) {
          y++;
       }
       y = round(y);
-      gravity = 0;
-      vspeed = 0;
+      set_grounded();
    }
-   state = handle_grounded;
+}
+
+function try_snap_to_object_ceiling(object) {
+   if (vspeed < 0) {
+   	vspeed = 0;
+   	var iy = 0;
+   	foundCeiling = false;
+      for(var iy = 0; !foundCeiling; iy++) {
+         if place_meeting(x, y - iy, object) {
+   			y = y - iy + 1;
+   			foundCeiling = true;
+   		}
+      }
+   }
+}
+
+function try_snap_to_object_right_wall(object) {
+   var foundwall = false;
+   if (hspeed >= 0) {
+      hspeed = 0;
+      foundwall = false;
+      for(var ix = 0; !foundwall; ix++) {
+         if place_meeting(x + ix, y, obj_block) {
+      		x = x + ix - 1;
+      		foundwall = true;
+      	}
+      }
+   }
+}
+
+function try_snap_to_object_left_wall(object) {
+   var foundwall = false;
+   if (hspeed <= 0) {
+   	hspeed = 0;
+      foundwall = false;
+      for(var ix = 0; !foundwall; ix++) {
+         if place_meeting(x - ix, y, obj_block) {
+   			x = x - ix + 1;
+   			foundwall = true;
+   		}
+      }
+   }
+}
+
+var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
+if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
+   try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
 }
 
-//Check if we should be falling
 else if !place_meeting(x, y + max(0, vspeed) + 1, obj_block) {
+   //Check if we should be falling
    gravity = 1.25;
-} 
-
-//If not falling, snap ourselves to ground
-else if vspeed > 0 {
-	gravity = 0;
-	vspeed = 0;
-   foundground = false;
-	for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x, y + iy, obj_collision) {
-			y = y + iy - 1;
-			foundground = true;
-         state = handle_grounded;
-		}
-   }
+} else {
+   //If not falling, snap ourselves to ground
+   try_snap_to_object_ground(obj_collision);
 }
 
-//moving platforms we want to be able to jump through the bottom
-if place_meeting(x, y + vspeed + 1, obj_block) and vspeed < 0 {
-	vspeed = 0;
-	var iy = 0;
-	foundCeiling = false;
-   for(var iy = 0; !foundCeiling; iy++) {
-      if place_meeting(x, y - iy, obj_block) {
-			y = y - iy + 1;
-			foundCeiling = true;
-		}
-   }
+if place_meeting(x, y + vspeed + 1, obj_block)  {
+   //moving platforms we want to be able to jump through the bottom
+	try_snap_to_object_ceiling(obj_block);
 }
 
 check_for_walls();
- 
-var foundwall = false;
 
-//horizontal collission
-if leftwall and hspeed <= 0 {
-	hspeed = 0;
-   foundwall = false;
-   for(var ix = 0; !foundwall; ix++) {
-      if place_meeting(x - ix, y, obj_block) {
-			x = x - ix + 1;
-			foundwall = true;
-		}
-   }
+//horizontal collision
+if leftwall {
+   try_snap_to_object_left_wall();
 }
 
-if rightwall and hspeed >= 0 {
-   hspeed = 0;
-   foundwall = false;
-   for(var ix = 0; !foundwall; ix++) {
-      if place_meeting(x + ix, y, obj_block) {
-   		x = x + ix - 1;
-   		foundwall = true;
-   	}
-   }
+if rightwall {
+   try_snap_to_object_right_wall();
 }
+
 //sloped block vertical collision
-
 var _slopeid = instance_place(x + hspeed, y + vspeed + 1, obj_diagonal_up)
 if _slopeid != noone print(y, , _slopeid.bbox_top);
 
 //treating as normal ground at top
-
 if place_meeting(x+hspeed, y + vspeed + 1, _slopeid) and x+hspeed > _slopeid.bbox_right and vspeed >= 0 {
    gravity = 0;
    vspeed = 0;
    var foundground = false;
    for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x+hspeed, y + iy, _slopeid) {
-   		y = y + iy-1;
+      if place_meeting(x + hspeed, y + iy, _slopeid) {
+   		y = y + iy - 1;
    		foundground = true;
          state = handle_grounded;
       }
@@ -93,23 +108,17 @@ if place_meeting(x+hspeed, y + vspeed + 1, _slopeid) and x+hspeed > _slopeid.bbo
 }
 
    //taking into account the slope
-else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {
-   
+else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {   
    //use this ratio to adjust velocity?
-   var slope_ratio = _slopeid.sprite_width/_slopeid.sprite_height;
-	//find point of collission on triangle
-   
+   var slope_ratio = _slopeid.sprite_width/_slopeid.sprite_height;  
+	//find point of collision on triangle
 	var y_top_slope=(round(
 		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
 		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
 		));
-   if (y+vspeed>=y_top_slope-(sprite_height/2)-1)
-      {
-         
+   if (y+vspeed>=y_top_slope-(sprite_height/2)-1) {
    		y = max(y_top_slope-sprite_height/2-1, _slopeid.bbox_top-sprite_height/2-1);
-         vspeed = 0;
-   		gravity=0;
-   		state = handle_grounded;
+         set_grounded();
 	}
 }
 
@@ -141,24 +150,30 @@ function handle_moving_ground() {
 
 function handle_moving_air() {
    //Update if we want to have air movement different from ground movement
-   if xIntent() == -1 and !leftwall and hspeed > -10 {
+   if (xIntent() == -1 and !leftwall and hspeed > -10) {
    	hspeed = hspeed - _acceleration;
    }
 
-   if xIntent() == 1 and !rightwall and hspeed < 10 {
+   if (xIntent() == 1 and !rightwall and hspeed < 10) {
       hspeed = hspeed + _acceleration;
    }
 
-   if xIntent() == 0 {
-   	if hspeed > 0 {
+   if (xIntent() == 0) {
+   	if (hspeed > 0) {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
    	}
       
-   	if hspeed < 0 {
+   	if (hspeed < 0) {
    		hspeed = hspeed + _friction;
    		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
    	}
+   }
+}
+
+function update_attack_input() {
+   if(meleeIntent()) {
+      handle_attack();
    }
 }
 #endregion movement
@@ -178,20 +193,19 @@ handle_airborne = function () {
    if (rightwall xor leftwall) and jumpIntent() == 1 {
    	vspeed = -20;
    	hspeed = rightwall ? -20 : 20;
+      handle_moving_air();
    } else if (rightwall and leftwall) and jumpIntent() == 1 {
       vspeed = -25;
+      handle_moving_air();
    } else if(grappleIntent() == 1) {
       //When grappling in the air, we want to skip handling air movement and instead,
       //use the grapple movement
       state = handle_grapple;
-      return;
    }
    
    if(tongueInst != noone) {
       handle_grapple();
-   }
-   
-   handle_moving_air();
+   }   
 }
 
 handle_grounded = function() {
@@ -209,10 +223,9 @@ handle_grounded = function() {
       //When grappling on the ground, we want to skip handling ground movement and instead,
       //use the grapple movement
       state = handle_grapple;
-      return;
+   } else {
+      handle_moving_ground();
    }
-
-   handle_moving_ground();
 }
 
 handle_jumping = function () {
@@ -244,6 +257,7 @@ handle_grapple = function() {
    } else {
       //Reached enemy, start pulling ourselves to enemy 
       if(distance_to_point(tongueInst.x, tongueInst.y) > grappleEndRadius) {
+         facing = sign(tongueInst.destinationX - x);
          move_towards_point(tongueInst.destinationX, tongueInst.destinationY, grappleSpeed);
       } else {
         instance_destroy(tongueInst);
@@ -254,41 +268,13 @@ handle_grapple = function() {
 }
 
 handle_attack = function() {
-   attackInst = instance_create_layer(x + (facing * meleeOffset) + hspeed, y + vspeed, "Instances", obj_melee_hitbox);
+   attackInst = instance_create_layer(x + (facing * meleeOffsetX) + hspeed, y + vspeed - meleeOffsetY, "Instances", obj_melee_hitbox);
    with (attackInst) {    
        player_inst = other.id;
    }
 }
 
 #endregion stateHandlers
-
-#region inputIntents
-function jumpIntent() {
-   if (keyboard_check_pressed(vk_space)) {
-      return 1;
-   }
-   else if (keyboard_check(vk_space)) {
-      return 2;
-   }
-   else return 0;
-}
-
-function xIntent() {
-   if(keyboard_check(vk_right)) return 1;
-   if(keyboard_check(vk_left)) return -1;
-   return 0;
-}
-
-function grappleIntent() {
-   if(mouse_check_button_pressed(mb_left)) return 1;
-   else return 0;
-}
-
-function meleeIntent() {
-   if(mouse_check_button_pressed(mb_right)) return 1;
-   else return 0;
-}
-#endregion inputIntents
 
 #region helperFunctions
 function make_tongue() {
@@ -311,16 +297,33 @@ function refresh_grapple() {
    grapple_charge = 1;
 }
 
+function update_camera() {
+   var current_view = view_camera[0];
+   camera_set_view_pos(
+   current_view, 
+   x-camera_get_view_width(current_view)/2, 
+   y-camera_get_view_height(current_view));
+}
+
+function update_facing() {
+   if(xIntent() != 0) {
+      facing = xIntent();
+   }
+}
+#endregion
+
+// If for whatever reason state is null, just set the state to idle
 if(state == pointer_null) {
    state = handle_idle;
 }
-#endregion
+
+// Update the player facing variable before updating state
+update_facing();
 state();
 
-if(xIntent() != 0) {
-   facing = xIntent();
-}
+// Attacking currently isnt a state because we want to be able to do it while in all other
+// states
+update_attack_input();
 
-if(meleeIntent()) {
-   handle_attack();
-}
+// Update camera to follow player
+update_camera();
