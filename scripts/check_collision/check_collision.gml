@@ -102,14 +102,14 @@ var bbox_width = bbox_right - bbox_left;
 
          x = round(main_line[1])-sign(hspeed)*bbox_width/2;
          hspeed = 0;
-         check_collision_horizontal()
+         check_collision_vertical();
       }
       
       if (round(main_line[2]) = round(other_line_x[2])){
    
          y = round(main_line[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
-         check_collision_vertical()
+         check_collision_horizontal();
       }
       
 
@@ -118,30 +118,142 @@ var bbox_width = bbox_right - bbox_left;
       if vspeed < 0 {
          y = max(round(main_line[2]), round(other_line_x[2]))-sign(vspeed)*bbox_height/2;
          vspeed = 0;
-         check_collision_vertical()
+         check_collision_horizontal();
       }
       else{
           y = min(round(main_line[2]), round(other_line_x[2]))-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          gravity = 0;
-         state = handle_grounded
-         check_collision_vertical()
+         state = handle_grounded;
+         check_collision_horizontal();
       }
    }
 
 
    if (main_line[0] != noone and other_line_x[0] = noone and other_line_y[0] != noone){
       if hspeed < 0{
-         x = max(round(main_line[1]), round(other_line_y[1]))-sign(hspeed)*bbox_width/2;;
+         x = max(round(main_line[1]), round(other_line_y[1]))-sign(hspeed)*bbox_width/2;
          hspeed = 0;
-         check_collision_horizontal()
+         check_collision_vertical();
       }
       else{
-         x = max(round(main_line[1]), round(other_line_y[1]))-sign(hspeed)*bbox_width/2;;
+         x = max(round(main_line[1]), round(other_line_y[1]))-sign(hspeed)*bbox_width/2;
          hspeed = 0;
-         check_collision_horizontal()
+         check_collision_vertical();
       }
   }
+  
+   if (main_line[0] = noone and other_line_x[0] = noone and other_line_y[0] != noone){
+   
+      if other_line_y[0].is_wall(other_line_y[1], other_line_y[2]){
+         
+         x = round(other_line_y[1])-sign(hspeed)*bbox_width/2;
+         hspeed = 0;
+         check_collision_vertical();
+      }
+         
+      if other_line_y[0].is_floor(other_line_y[1], other_line_y[2]) and vspeed>0{
+         
+         if hspeed>0{
+            x = other_line_y[0].bbox_left-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_vertical();
+         }
+         
+         else if hspeed<0{
+            x = other_line_y[0].bbox_right-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_vertical();
+         }
+      }           
+      if other_line_y[0].is_ceiling(other_line_y[1], other_line_y[2]) and vspeed<0{
+         
+         if hspeed>0{
+            x = other_line_y[0].bbox_left-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_vertical();
+         }
+         
+         else if hspeed<0{
+            x = other_line_y[0].bbox_right-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_vertical();           
+         }
+      }
+   }
+   if (main_line[0] = noone and other_line_x[0] != noone and other_line_y[0] = noone){
+   
+      if other_line_x[0].is_floor(other_line_x[1], other_line_x[2]) and vspeed > 0{
+         
+         y = round(other_line_x[2])-sign(vspeed)*bbox_height/2;
+         vspeed = 0;
+         gravity = 0;
+         state = handle_grounded;
+         check_collision_horizontal();
+      }
+      
+      if other_line_x[0].is_ceiling(other_line_x[1], other_line_x[2]) and vspeed < 0{
+         
+         y = round(other_line_x[2])-sign(vspeed)*bbox_height/2;
+         vspeed = 0;
+         check_collision_horizontal();
+      }
+         
+      if other_line_x[0].is_wall(other_line_x[1], other_line_x[2]){
+         
+         if vspeed>0{
+            y = other_line_x[0].bbox_top-sign(vspeed)*bbox_height/2;
+            vspeed = 0;
+            gravity = 0;
+            state = handle_grounded;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_horizontal();
+         }
+         
+         else if vspeed<0{
+            y = other_line_x[0].bbox_bottom-sign(vspeed)*bbox_height/2;
+            vspeed = 0;
+            print("rare corner case, hopefully nothing breaks when this prints");
+            check_collision_horizontal();
+         }
+      }
+            
+   }
+   if (main_line[0] != noone and other_line_x[0] = noone and other_line_y[0] = noone){
+      
+      if main_line[0].is_floor(main_line[1], main_line[2]) and vspeed > 0{
+         
+         y = round(main_line[2])-sign(vspeed)*bbox_height/2;
+         vspeed = 0;
+         gravity = 0;
+         state = handle_grounded;
+         check_collision_horizontal();     
+      }
+      if main_line[0].is_ceiling(main_line[1], main_line[2]) and vspeed < 0{
+      
+         y = round(main_line[2])-sign(vspeed)*bbox_height/2;
+         vspeed = 0;
+         check_collision_horizontal(); 
+      }
+      if main_line[0].is_wall(main_line[1], main_line[2]){
+         
+         if hspeed>0{
+            x = main_line[0].bbox_left-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            check_collision_vertical();
+         }
+         
+         else if hspeed<0{
+            x = main_line[0].bbox_right-sign(hspeed)*bbox_width/2;
+            hspeed = 0;
+            check_collision_vertical();           
+         }
+      }
+   }
 }
 
 if hspeed < 0 and vspeed < 0{
