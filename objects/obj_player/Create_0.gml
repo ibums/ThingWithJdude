@@ -26,14 +26,16 @@ grappleboosted = false;
 grappleBoostTime = 15;
 maxXAim = 0;
 maxYAim = 0;
-jumpCharges = 1;
-maxJumpCharges = 1;
-doubleJumpHeight = -5;
 grappling = false;
 
-wallJumpSpeed = 10;
+//Jummp Vars
+doubleJumpHeight = -3;
+jumpCharges = 1;
+maxJumpCharges = 1;
 jumpHeight = -1;
 jumpHeightModifierMax = 4;
+doubleJumpHorizontalSpeed = 2;
+wallJumpSpeed = 10;
 
 facing = 1;
 meleeOffset = sprite_get_width(spr_melee_hitbox)*2;

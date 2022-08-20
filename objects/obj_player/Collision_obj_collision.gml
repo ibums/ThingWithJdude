@@ -1,5 +1,4 @@
 //Handle corner case (literally) when colliding with the corner of a block
-print("mind goblin");
 if (x >= other.x and y >= other.y) {
    var escapedWall = false;  
    for(var ix = 0; !escapedWall; ix++) {

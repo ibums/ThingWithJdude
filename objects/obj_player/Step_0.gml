@@ -7,6 +7,7 @@ function set_grounded() {
 }
 
 function try_snap_to_object_ground(object) {
+   print("Snap to ground");
    if(vspeed > 0) {
       while(!place_meeting(x, y + 1, object)) {
          y++;
@@ -59,33 +60,6 @@ function try_snap_to_object_left_wall(object) {
       }
    }
 }
-
-var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
-if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
-   try_snap_to_object_ground(obj_moving_platform);
-   x+= movingPlatform.moveX;
-   y+= movingPlatform.moveY;
-}
-
-else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
-   //Check if we should be falling
-   gravity = .75;
-} else {
-   //If not falling, snap ourselves to ground
-   try_snap_to_object_ground(obj_collision);
-}
-
-if place_meeting(x, y + vspeed + 1, obj_block)  {
-   //moving platforms we want to be able to jump through the bottom
-	try_snap_to_object_ceiling(obj_block);
-}
-
-check_for_walls();
-
-//horizontal collision
-
-
-
 #endregion collision
 
 #region movement
@@ -113,8 +87,8 @@ function handle_moving_ground() {
    }
 }
 
+//Update if we want to have air movement different from ground movement
 function handle_moving_air() {
-   //Update if we want to have air movement different from ground movement
    if (xIntent() == -1 and !leftwall and hspeed > -maxMoveSpeed) {
    	hspeed = hspeed - _acceleration;
    }
@@ -174,13 +148,21 @@ handle_airborne = function () {
       vspeed = -2 * wallJumpSpeed + wallJumpSpeed / 2;
    } else if(jumpIntent() == 1 && jumpCharges > 0) {
       jumpCharges--;
+      //Ensure if the player is trying to double jump the opposite direction they are moving
+      //Set their horizontal velocity to 0
+      if((hspeed > 0 && xIntent() == -1) || (hspeed < 0 && xIntent() == 1)) {
+         hspeed = doubleJumpHorizontalSpeed * xIntent();
+      }
+
       jump(doubleJumpHeight);   
-   }  if(grappleIntent() == 1) {
+   }
+   
+   if(grappleIntent() == 1) {
       //Override double jump stuff
       handle_grapple();
       state = handle_grapple;
    }
-   
+
    handle_moving_air();
    if(tongueInst != noone) {
       handle_grapple();
@@ -230,8 +212,6 @@ handle_jumping = function () {
       handle_grapple();
       state = handle_grapple;
    }
-   
-   print("JUMPING");
    handle_moving_air();
 }
 
@@ -324,6 +304,31 @@ function set_grapple_boosted() {
 }
 #endregion
 
+#region movingPlatform
+var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
+if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
+   try_snap_to_object_ground(obj_moving_platform);
+   x+= movingPlatform.moveX;
+   y+= movingPlatform.moveY;
+}
+
+else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
+   //Check if we should be falling
+   gravity = .75;
+   if(jumpIntent() == 0) {
+      state = handle_airborne;
+   }
+   
+}
+
+if place_meeting(x, y + vspeed + 1, obj_block)  {
+   //moving platforms we want to be able to jump through the bottom
+	try_snap_to_object_ceiling(obj_block);
+}
+
+check_for_walls();
+#endregion movingPlatform
+
 // If for whatever reason state is null, just set the state to idle
 if(state == pointer_null) {
    state = handle_idle;
@@ -341,8 +346,6 @@ if(grappleboosted) {
 // Update the player facing variable before updating state
 update_facing();
 state();
-
-
 grappleSpeed = speed > baseGrappleSpeed ? speed : baseGrappleSpeed;
 // Attacking currently isnt a state because we want to be able to do it while in all other
 // states
