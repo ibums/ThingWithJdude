@@ -1,5 +1,6 @@
 //Handle corner case (literally) when colliding with the corner of a block
-if (x > other.x and y > other.y) {
+print("mind goblin");
+if (x >= other.x and y >= other.y) {
    var escapedWall = false;  
    for(var ix = 0; !escapedWall; ix++) {
       if !place_meeting(x + ix, y + ix, obj_block) {
@@ -10,7 +11,7 @@ if (x > other.x and y > other.y) {
    }
 }
 
-else if (x < other.x and y > other.y) {
+else if (x <= other.x and y >= other.y) {
    var escapedWall = false;
    for(var ix = 0; !escapedWall; ix++) {
       if !place_meeting(x - ix, y + ix, obj_block) {
@@ -21,7 +22,7 @@ else if (x < other.x and y > other.y) {
    }
 }
 
-else if (x > other.x and y < other.y) {
+else if (x >= other.x and y <= other.y) {
    var escapedFloor = false;
    for(var iy = 0; !escapedFloor; iy++) {
       if !place_meeting(x + iy, y - iy, obj_block) {
@@ -32,7 +33,7 @@ else if (x > other.x and y < other.y) {
 		}
    }
 } 
-else if (x < other.x and y < other.y) and place_meeting(x, y, obj_diagonal_up) = false {
+else if (x <= other.x and y <= other.y){
    var escapedCeiling = false;
    for(var iy = 0; !escapedCeiling; iy++) {
       if !place_meeting(x - iy, y - iy, obj_block) {

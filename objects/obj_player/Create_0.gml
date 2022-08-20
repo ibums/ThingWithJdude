@@ -2,7 +2,7 @@ event_inherited();
 jump = false;
 jump_height_modifier = 1;
 _friction = 0.5;
-_acceleration = 0.15;
+_acceleration = 0.75;
 airborne = false;
 grapple_charge = 0;
 //colision vars

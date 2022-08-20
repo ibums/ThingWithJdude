@@ -8,6 +8,7 @@
     {"id":{"name":"spr_checkpoint_spawn","path":"sprites/spr_checkpoint_spawn/spr_checkpoint_spawn.yy",},"order":0,},
     {"id":{"name":"spr_stand_in_spikes","path":"sprites/spr_stand_in_spikes/spr_stand_in_spikes.yy",},"order":1,},
     {"id":{"name":"obj_melee_hitbox","path":"objects/obj_melee_hitbox/obj_melee_hitbox.yy",},"order":0,},
+    {"id":{"name":"check_collision","path":"scripts/check_collision/check_collision.yy",},"order":4,},
     {"id":{"name":"check_for_walls","path":"scripts/check_for_walls/check_for_walls.yy",},"order":2,},
     {"id":{"name":"obj_checkpoint_spawn","path":"objects/obj_checkpoint_spawn/obj_checkpoint_spawn.yy",},"order":0,},
     {"id":{"name":"spr_melee_hitbox","path":"sprites/spr_melee_hitbox/spr_melee_hitbox.yy",},"order":0,},

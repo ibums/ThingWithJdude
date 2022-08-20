@@ -1,5 +1,5 @@
 #region collision
-
+check_collision();
 function set_grounded() {
    gravity = 0;
    vspeed = 0;
@@ -39,6 +39,7 @@ function try_snap_to_object_right_wall(object) {
          if place_meeting(x + ix, y, obj_block) {
       		x = x + ix - 1;
       		foundwall = true;
+            print("snap to right");
       	}
       }
    }
@@ -53,6 +54,7 @@ function try_snap_to_object_left_wall(object) {
          if place_meeting(x - ix, y, obj_block) {
    			x = x - ix + 1;
    			foundwall = true;
+            print("snap to left");
    		}
       }
    }
@@ -65,62 +67,16 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
    y+= movingPlatform.moveY;
 }
 
-else if !place_meeting(x, y + max(0, vspeed) + 1, obj_block) {
+else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
    gravity = 1.25;
-} else {
-   //If not falling, snap ourselves to ground
-   try_snap_to_object_ground(obj_collision);
-}
-
-if place_meeting(x, y + vspeed + 1, obj_block)  {
-   //moving platforms we want to be able to jump through the bottom
-	try_snap_to_object_ceiling(obj_block);
 }
 
 check_for_walls();
 
 //horizontal collision
-if leftwall {
-   try_snap_to_object_left_wall();
-}
 
-if rightwall {
-   try_snap_to_object_right_wall();
-}
 
-//sloped block vertical collision
-var _slopeid = instance_place(x + hspeed, y + vspeed + 1, obj_diagonal_up)
-if _slopeid != noone print(y, , _slopeid.bbox_top);
-
-//treating as normal ground at top
-if place_meeting(x+hspeed, y + vspeed + 1, _slopeid) and x+hspeed > _slopeid.bbox_right and vspeed >= 0 {
-   gravity = 0;
-   vspeed = 0;
-   var foundground = false;
-   for(var iy = 0; !foundground; iy++) {
-      if place_meeting(x + hspeed, y + iy, _slopeid) {
-   		y = y + iy - 1;
-   		foundground = true;
-         state = handle_grounded;
-      }
-   }
-}
-
-   //taking into account the slope
-else if (hspeed >= 0) and _slopeid != noone and x + hspeed>_slopeid.bbox_left and vspeed >= 0 {   
-   //use this ratio to adjust velocity?
-   var slope_ratio = _slopeid.sprite_width/_slopeid.sprite_height;  
-	//find point of collision on triangle
-	var y_top_slope=(round(
-		((x + hspeed-_slopeid.bbox_left)/(_slopeid.bbox_right-_slopeid.bbox_left))
-		*(_slopeid.bbox_top-_slopeid.bbox_bottom)+_slopeid.bbox_bottom
-		));
-   if (y+vspeed>=y_top_slope-(sprite_height/2)-1) {
-   		y = max(y_top_slope-sprite_height/2-1, _slopeid.bbox_top-sprite_height/2-1);
-         set_grounded();
-	}
-}
 
 #endregion collision
 
@@ -213,11 +169,22 @@ handle_grounded = function() {
    if(tongueInst != noone) {
       state = handle_grapple;
    }
-   if(jumpIntent() == 1) {
+
+
+   if(jumpIntent() == 1)
+   {
       jump_height_modifier = 1;
       vspeed = -3;
 	   state = handle_jumping;
    }
+   //this solves clipping into blocks in 1 tile tall tunnels
+   //however if a moving platform or other collission object
+   //that we should be able to jump through is above us,
+   //it will also stop us from jumping. Maybe we can give blocks
+   //like that a seperate atribute that we can check for? - ibums
+   
+   //welp, this is broken now, we need to find a new way to check
+   //for ceilings before jumping - ibums
    
    if(grappleIntent() == 1) {
       //When grappling on the ground, we want to skip handling ground movement and instead,
