@@ -37,6 +37,15 @@ jumpHeightModifierMax = 4;
 doubleJumpHorizontalSpeed = 2;
 wallJumpSpeed = 10;
 
+
+//Dash vars
+maxDashCharges = 1;
+dashCharges = 1;
+dashTime = 7;
+dashing = false;
+dashSpeed = 15;
+downDashSpeed = 15
+
 facing = 1;
 meleeOffset = sprite_get_width(spr_melee_hitbox)*2;
 

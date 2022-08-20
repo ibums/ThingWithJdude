@@ -14,8 +14,14 @@ function xIntent() {
    return 0;
 }
 
+function yIntent() {
+   if(keyboard_check(vk_up)) return -1;
+   if(keyboard_check(vk_down) or keyboard_check(ord("S"))) return 1;
+   return 0;
+}
+
 function grappleIntent() {
-   if(mouse_check_button_pressed(mb_left) || keyboard_check_pressed(vk_numpad4)) return 1;
+   if(mouse_check_button_pressed(mb_left) || keyboard_check_pressed(vk_numpad5)) return 1;
    else return 0;
 }
 
@@ -23,3 +29,9 @@ function meleeIntent() {
    if(mouse_check_button_pressed(mb_right) || keyboard_check_pressed(vk_numpad5)) return 1;
    else return 0;
 }
+
+function dashIntent() {
+   if(keyboard_check_pressed(vk_shift) || keyboard_check_pressed(vk_numpad4)) return 1;
+   else return 0;
+}
+

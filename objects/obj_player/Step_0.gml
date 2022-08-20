@@ -153,11 +153,13 @@ handle_airborne = function () {
       if((hspeed > 0 && xIntent() == -1) || (hspeed < 0 && xIntent() == 1)) {
          hspeed = doubleJumpHorizontalSpeed * xIntent();
       }
-
       jump(doubleJumpHeight);   
    }
-   
-   if(grappleIntent() == 1) {
+   if(dashIntent()) {
+      print("AIRDASH");
+      change_state_dash();
+      dashCharges--;
+   } else if(grappleIntent() == 1) {
       //Override double jump stuff
       handle_grapple();
       state = handle_grapple;
@@ -172,6 +174,7 @@ handle_airborne = function () {
 
 
 handle_grounded = function() {
+   dashCharges = maxDashCharges;
    jumpCharges = maxJumpCharges;
    grapple_charge = 1;
    if(tongueInst != noone) {
@@ -193,6 +196,8 @@ handle_grounded = function() {
       //When grappling on the ground, we want to skip handling ground movement and instead,
       //use the grapple movement
       state = handle_grapple;
+   } else if(dashIntent()) {
+      change_state_dash();
    } else {
       handle_moving_ground();
    }
@@ -255,9 +260,35 @@ handle_attack = function() {
    ds_list_destroy(_list);
 }
 
+handle_dash = function() {
+   //Downdash
+   if(yIntent() == 1) {
+      vspeed = downDashSpeed;
+      gravity = 0;
+      hspeed = 0;
+   } else { //Side Dash
+      vspeed = 0;
+      gravity = 0;
+      hspeed = facing * dashSpeed;   
+   }
+   
+   if(jumpIntent() == 1) {
+      jump(jumpHeight);
+      jumpCharges = 0;
+   }
+}
+
 #endregion stateHandlers
 
 #region helperFunctions
+function change_state_dash() {
+   //Set alarm for dashing. Dash until alarm is over. Alarm handles state change
+   if(alarm[0] == -1) {
+      alarm[0] = dashTime;
+   }
+   dashing = true;
+   state = handle_dash;
+}
 function make_tongue() {
    print("GRAPPLE");
    var theta = facing == 1 ? 0 : degtorad(180);
@@ -310,12 +341,10 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
-}
-
-else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
+} else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
    gravity = .75;
-   if(jumpIntent() == 0) {
+   if(jumpIntent() == 0 && !dashing) {
       state = handle_airborne;
    }
    
