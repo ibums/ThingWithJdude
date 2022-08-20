@@ -155,10 +155,12 @@ handle_airborne = function () {
       }
       jump(doubleJumpHeight);   
    }
-   if(dashIntent()) {
-      print("AIRDASH");
+   //Dash if dash button is used and you have dash charges. Downdash does not require a charge
+   if(dashIntent() && (dashCharges > 0 || yIntent() == 1)) {
+      if(yIntent() != 1) {
+         dashCharges = 0;
+      }
       change_state_dash();
-      dashCharges--;
    } else if(grappleIntent() == 1) {
       //Override double jump stuff
       handle_grapple();
@@ -263,9 +265,16 @@ handle_attack = function() {
 handle_dash = function() {
    //Downdash
    if(yIntent() == 1) {
-      vspeed = downDashSpeed;
+      vspeed = terminalVelocity;
       gravity = 0;
       hspeed = 0;
+      alarm[0] = -1; //downdash is only one frame
+      dashing = false;
+      if(is_grounded()) {
+         state = handle_grounded;
+      } else {
+         state = handle_airborne;
+      }
    } else { //Side Dash
       vspeed = 0;
       gravity = 0;
@@ -274,13 +283,23 @@ handle_dash = function() {
    
    if(jumpIntent() == 1) {
       jump(jumpHeight);
-      jumpCharges = 0;
+      if(!is_grounded()) {
+         jumpCharges = 0;   
+      }
+      alarm[0] = -1;
+      dashing = false;
    }
 }
+
+
 
 #endregion stateHandlers
 
 #region helperFunctions
+function is_grounded() {
+   return place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block);
+}
+
 function change_state_dash() {
    //Set alarm for dashing. Dash until alarm is over. Alarm handles state change
    if(alarm[0] == -1) {
@@ -323,7 +342,7 @@ function update_camera() {
 }
 
 function update_facing() {
-   if(xIntent() != 0) {
+   if(xIntent() != 0 && !dashing) {
       facing = xIntent();
    }
 }
@@ -343,7 +362,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
    y+= movingPlatform.moveY;
 } else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
-   gravity = .75;
+   gravity = grav;
    if(jumpIntent() == 0 && !dashing) {
       state = handle_airborne;
    }

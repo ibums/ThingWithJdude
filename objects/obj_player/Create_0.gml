@@ -5,6 +5,9 @@ _friction = 0.5;
 _acceleration = 0.75;
 airborne = false;
 grapple_charge = 0;
+grav = .75
+terminalVelocity = 15;
+
 //colision vars
 check_for_walls();
 horzBuffer = 1;
@@ -44,7 +47,6 @@ dashCharges = 1;
 dashTime = 7;
 dashing = false;
 dashSpeed = 15;
-downDashSpeed = 15
 
 facing = 1;
 meleeOffset = sprite_get_width(spr_melee_hitbox)*2;
