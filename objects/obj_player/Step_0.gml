@@ -69,7 +69,15 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
 
 else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
-   gravity = 1.25;
+   gravity = .75;
+} else {
+   //If not falling, snap ourselves to ground
+   try_snap_to_object_ground(obj_collision);
+}
+
+if place_meeting(x, y + vspeed + 1, obj_block)  {
+   //moving platforms we want to be able to jump through the bottom
+	try_snap_to_object_ceiling(obj_block);
 }
 
 check_for_walls();
@@ -81,17 +89,18 @@ check_for_walls();
 #endregion collision
 
 #region movement
+
 function handle_moving_ground() {
    //Update if we want to have air movement different from ground movement
-   if xIntent() == -1 and !leftwall and hspeed > -10 {
+   if xIntent() == -1 and !leftwall and hspeed > -maxMoveSpeed {
    	hspeed = hspeed - _acceleration;
    }
 
-   if xIntent() == 1 and !rightwall and hspeed < 10 {
+   if xIntent() == 1 and !rightwall and hspeed < maxMoveSpeed {
       hspeed = hspeed + _acceleration;
    }
 
-   if xIntent() == 0 {
+   if xIntent() == 0 or abs(hspeed) > maxMoveSpeed{
    	if hspeed > 0 {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
@@ -106,11 +115,11 @@ function handle_moving_ground() {
 
 function handle_moving_air() {
    //Update if we want to have air movement different from ground movement
-   if (xIntent() == -1 and !leftwall and hspeed > -10) {
+   if (xIntent() == -1 and !leftwall and hspeed > -maxMoveSpeed) {
    	hspeed = hspeed - _acceleration;
    }
 
-   if (xIntent() == 1 and !rightwall and hspeed < 10) {
+   if (xIntent() == 1 and !rightwall and hspeed < maxMoveSpeed) {
       hspeed = hspeed + _acceleration;
    }
 
@@ -132,6 +141,18 @@ function update_attack_input() {
       handle_attack();
    }
 }
+
+function grapple_boost() { 
+   hspeed += (grappleBoostAcceleration * cos(grappleDir));
+   vspeed += (grappleBoostAcceleration * sin(grappleDir));
+}
+
+function jump(height) {
+   jump_height_modifier = 1;
+   vspeed = height;
+   state = handle_jumping;
+}
+
 #endregion movement
 
 #region stateHandlers
@@ -147,35 +168,35 @@ handle_wallGrabIdle = function() {
 handle_airborne = function () {
    jump_height_modifier = 1;
    if (rightwall xor leftwall) and jumpIntent() == 1 {
-   	vspeed = -20;
-   	hspeed = rightwall ? -20 : 20;
-      handle_moving_air();
+   	vspeed = -2 * wallJumpSpeed;
+   	hspeed = rightwall ? -wallJumpSpeed : wallJumpSpeed;
    } else if (rightwall and leftwall) and jumpIntent() == 1 {
-      vspeed = -25;
-      handle_moving_air();
-   } else if(grappleIntent() == 1) {
-      //When grappling in the air, we want to skip handling air movement and instead,
-      //use the grapple movement
+      vspeed = -2 * wallJumpSpeed + wallJumpSpeed / 2;
+   } else if(jumpIntent() == 1 && jumpCharges > 0) {
+      jumpCharges--;
+      jump(doubleJumpHeight);   
+   }  if(grappleIntent() == 1) {
+      //Override double jump stuff
+      handle_grapple();
       state = handle_grapple;
    }
    
+   handle_moving_air();
    if(tongueInst != noone) {
       handle_grapple();
    }   
 }
 
+
+
 handle_grounded = function() {
+   jumpCharges = maxJumpCharges;
    grapple_charge = 1;
    if(tongueInst != noone) {
       state = handle_grapple;
    }
-
-
-   if(jumpIntent() == 1)
-   {
-      jump_height_modifier = 1;
-      vspeed = -3;
-	   state = handle_jumping;
+   if(jumpIntent() == 1) {
+      jump(jumpHeight);
    }
    //this solves clipping into blocks in 1 tile tall tunnels
    //however if a moving platform or other collission object
@@ -196,21 +217,27 @@ handle_grounded = function() {
 }
 
 handle_jumping = function () {
-   if jumpIntent() == 2 and jump_height_modifier < 30 {
+   if jumpIntent() == 2 and jump_height_modifier < jumpHeightModifierMax {
    	vspeed = vspeed - (7 / jump_height_modifier);
    	++jump_height_modifier;
    } else if jumpIntent() == 0 {
       state = handle_airborne;
    	jump_height_modifier = 1;
    }
-
+   
+   if(grappleIntent() == 1) {
+      //Override double jump stuff
+      handle_grapple();
+      state = handle_grapple;
+   }
+   
+   print("JUMPING");
    handle_moving_air();
 }
 
 handle_grapple = function() {
    aimX = mouse_x;
    aimY = mouse_y;
-   print("GRAPPLE");
    grapple_charge = 0;
    if(tongueInst == noone && make_tongue() == noone) {
       //TODO save previous state and use it here
@@ -235,28 +262,40 @@ handle_grapple = function() {
 }
 
 handle_attack = function() {
-   attackInst = instance_create_layer(x + (facing * meleeOffsetX) + hspeed, y + vspeed - meleeOffsetY, "Instances", obj_melee_hitbox);
-   with (attackInst) {    
-       player_inst = other.id;
+   var _list = ds_list_create();
+   var _num = collision_circle_list(x, y, meleeOffset, obj_enemy, false, true, _list, false);
+   if (_num > 0) {
+       for (var i = 0; i < _num; ++i) {
+          attackInst = instance_create_layer(_list[| i].x, _list[| i].y, "Instances", obj_melee_hitbox);
+          with (attackInst) {    
+             player_inst = other.id;
+          }
+       }
    }
+   ds_list_destroy(_list);
 }
 
 #endregion stateHandlers
 
 #region helperFunctions
 function make_tongue() {
-   var ret = collision_line_point(x, y,  other.aimX, other.aimY, obj_enemy, true, true);
+   print("GRAPPLE");
+   var theta = facing == 1 ? 0 : degtorad(180);
+   maxXAim = maxGrappleLen * cos(theta) + x;
+   maxYAim = maxGrappleLen * sin(theta) + y;   
+   var ret = collision_line_point(x, y,  maxXAim, maxYAim, obj_enemy, true, true);
    
    //Dont shoot tongue if missed
    if(ret[0] == noone) {
+      print("NOTHING");
       return noone; //Do nothing
    }
-   
+   grappleDir = theta;
    tongueInst = instance_create_layer(x, y, "Instances", obj_tongue);
    with (tongueInst) {    
        owner_instance = other.id;
-       destinationX = ret[1];
-       destinationY = ret[2];
+       destinationX = ret[0].x;
+       destinationY = ret[0].y;
    }
 }
 
@@ -269,12 +308,18 @@ function update_camera() {
    camera_set_view_pos(
    current_view, 
    x-camera_get_view_width(current_view)/2, 
-   y-camera_get_view_height(current_view));
+   y-camera_get_view_height(current_view)/2);
 }
 
 function update_facing() {
    if(xIntent() != 0) {
       facing = xIntent();
+   }
+}
+
+function set_grapple_boosted() {
+   if(tongueInst != noone) {
+      grappleboosted = true;
    }
 }
 #endregion
@@ -284,10 +329,21 @@ if(state == pointer_null) {
    state = handle_idle;
 }
 
+if(grappleboosted) {
+   //Set the grapple boost time alarm
+   if(alarm[0] == -1) {
+      alarm[0] = grappleBoostTime;
+   }
+   state = handle_grapple;
+   grapple_boost();
+}
+
 // Update the player facing variable before updating state
 update_facing();
 state();
 
+
+grappleSpeed = speed > baseGrappleSpeed ? speed : baseGrappleSpeed;
 // Attacking currently isnt a state because we want to be able to do it while in all other
 // states
 update_attack_input();

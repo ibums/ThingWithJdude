@@ -1,2 +1,5 @@
 instance_destroy(other);
-player_inst.refresh_grapple();
+if(!player_inst.grappleboosted) {
+   player_inst.set_grapple_boosted();
+   player_inst.jumpCharges =  player_inst.maxJumpCharges;
+}

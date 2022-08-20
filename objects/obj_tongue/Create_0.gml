@@ -3,7 +3,7 @@ destinationX = 0;
 destinationY = 0;
 reachedDestination = false;
 
-moveSpeed = 30;
+moveSpeed = 50;
 
 //unused
 state = pointer_null;

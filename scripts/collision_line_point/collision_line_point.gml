@@ -4,6 +4,11 @@
 //if (r[0] != noone) {
 //    // r[0] holds the nearest (hit) instance.
 //}
+//The script returns an array containing hit instance ID as element 0,
+//hit point X as element 1, 
+//and hit point Y as element 2. 
+//If there are no matching instances between points, 
+//instance ID is set to noone while hit point XY are set to destination point.
 function collision_line_point(_x1, _y1, _x2, _y2, _obj, _prec, _notme) {
    var x1 = _x1;
    var y1 = _y1;

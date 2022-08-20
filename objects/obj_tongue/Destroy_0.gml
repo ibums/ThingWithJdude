@@ -1,0 +1,1 @@
+owner_instance.grappling = false;
