@@ -5,7 +5,7 @@ function check_collision_vertical(){
    
    var bbox_height = bbox_bottom - bbox_top;
    
-   if vspeed > 0 var bbox_y = bbox_bottom;
+   if vspeed > 0 var bbox_y = bbox_bottom-1;
    else var bbox_y = bbox_top;
    
    var line_left = collision_line_point(bbox_left, bbox_y, bbox_left, bbox_y + vspeed,
@@ -35,10 +35,10 @@ function check_collision_horizontal(){
    
    var bbox_width = bbox_right - bbox_left;
    
-   if hspeed > 0 var bbox_x = bbox_right;
+   if hspeed > 0 var bbox_x = bbox_right-1;
    else var bbox_x = bbox_left;
    
-   var line_top = collision_line_point(bbox_x, bbox_top, bbox_x + hspeed, bbox_top+1,
+   var line_top = collision_line_point(bbox_x, bbox_top, bbox_x + hspeed, bbox_top,
    obj_collision, false, true);
    
    var line_bottom = collision_line_point(bbox_x, bbox_bottom-1, bbox_x + hspeed, bbox_bottom-1,

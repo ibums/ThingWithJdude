@@ -60,6 +60,51 @@ function try_snap_to_object_left_wall(object) {
       }
    }
 }
+function wall_jump_check(){
+   
+   var x_left = 999;
+   
+   var x_right = 999;
+   
+   var bbox_width = bbox_right - bbox_left;
+   
+   var buffer = bbox_width/2;
+      //this can be adjusted to taste.
+   
+   var line_top_right = collision_line_point(bbox_right-1, bbox_top, bbox_right-1 + buffer, bbox_top,
+   obj_collision, false, true);
+   
+   var line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1, bbox_right-1 + buffer, bbox_bottom-1,
+   obj_collision, false, true);
+   
+   var line_top_left = collision_line_point(bbox_left, bbox_top, bbox_left - buffer, bbox_top,
+   obj_collision, false, true);
+   
+   var line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1, bbox_left - buffer, bbox_bottom-1,
+   obj_collision, false, true);
+
+   if line_top_right[0] = noone and line_bottom_right[0] = noone
+   and line_top_left[0] = noone and line_bottom_left[0] = noone{
+      return false;
+      exit;
+   }
+   else {return true}
+
+   if line_top_right[0] != noone or line_bottom_right[0] != noone {
+      x_right = round(min(line_top_right[1], line_bottom_right[1]));
+   }
+   if line_top_left[0] != noone or line_bottom_left[0] != noone {
+      x_left = round(max(line_top_left[1], line_bottom_left[1]));
+   }
+   
+   if abs(x - x_right) < abs(x - x_left){
+      x = x_right - bbox_width/2;
+   }
+   else{
+      x = x_left + bbox_width/2;
+   }
+}
+
 #endregion collision
 
 #region movement
