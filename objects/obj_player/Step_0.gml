@@ -116,15 +116,15 @@ function wall_jump_check() {
 
 function handle_moving_ground() {
    //Update if we want to have air movement different from ground movement
-   if xIntent() == -1 and !leftwall and hspeed > -maxMoveSpeed {
+   if handler._kLeft and !leftwall and hspeed > -maxMoveSpeed {
    	hspeed = hspeed - _acceleration;
    }
 
-   if xIntent() == 1 and !rightwall and hspeed < maxMoveSpeed {
+   if handler._kRight and !rightwall and hspeed < maxMoveSpeed {
       hspeed = hspeed + _acceleration;
    }
 
-   if xIntent() == 0 or abs(hspeed) > maxMoveSpeed{
+   if !(handler._kLeft || handler._kRight) or abs(hspeed) > maxMoveSpeed{
    	if hspeed > 0 {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
@@ -139,15 +139,15 @@ function handle_moving_ground() {
 
 //Update if we want to have air movement different from ground movement
 function handle_moving_air() {
-   if (xIntent() == -1 and !leftwall and hspeed > -maxMoveSpeed) {
+   if (handler._kLeft and !leftwall and hspeed > -maxMoveSpeed) {
    	hspeed = hspeed - _acceleration;
    }
 
-   if (xIntent() == 1 and !rightwall and hspeed < maxMoveSpeed) {
+   if (handler._kRight and !rightwall and hspeed < maxMoveSpeed) {
       hspeed = hspeed + _acceleration;
    }
 
-   if (xIntent() == 0) {
+   if (!(handler._kLeft || handler._kRight)) {
    	if (hspeed > 0) {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
@@ -161,7 +161,7 @@ function handle_moving_air() {
 }
 
 function update_attack_input() {
-   if(meleeIntent()) {
+   if(handler._kAttack) {
       handle_attack();
    }
 }
@@ -199,34 +199,42 @@ handle_walljump = function() {
 
 handle_airborne = function () {
    jump_height_modifier = 1;
-   if (rightwall xor leftwall) and jumpIntent() == 1 {
+   if ((rightwall xor leftwall) and handler._kJump) {
    	state = handle_walljump;
       walljumping = true;
-   } else if (rightwall and leftwall) and jumpIntent() == 1 {
+   } else if ((rightwall and leftwall) and handler._kJump) {
       state = handle_walljump;
       walljumping = true;
-   } else if(jumpIntent() == 1 && jumpCharges > 0) {
+   } else if(handler._kJump && jumpCharges > 0) {
       jumpCharges--;
       //Ensure if the player is trying to double jump the opposite direction they are moving
       //Set their horizontal velocity to 0
-      if((hspeed > 0 && xIntent() == -1) || (hspeed < 0 && xIntent() == 1)) {
-         hspeed = doubleJumpHorizontalSpeed * xIntent();
+      if((hspeed > 0 && handler._kLeft) || (hspeed < 0 && handler._kRight)) {
+         var djumpdir = 1;
+         
+         if(handler._kLeft) {
+            djumpdir = -1;
+         } else if(handler._kRight) {
+            djumpdir = 1;
+         }
+         
+         hspeed = doubleJumpHorizontalSpeed * djumpdir;
       }
       jump(doubleJumpHeight);   
-   } else if (rightwall xor leftwall) and dashIntent() == 1 {
+   } else if ((rightwall xor leftwall) and handler._kDash) {
    	state = handle_dash;
       dashing = true;
-   } else if (rightwall and leftwall) and dashIntent() == 1 {
+   } else if ((rightwall and leftwall) and handler._kDash) {
       state = handle_dash;
       dashing = true;
    }
    //Dash if dash button is used and you have dash charges. Downdash does not require a charge
-   if(dashIntent() && (dashCharges > 0 || yIntent() == 1)) {
-      if(yIntent() != 1) {
+   if (handler._kDash && (dashCharges > 0 || handler._kDown)) {
+      if (!handler._kDown) {
          dashCharges = 0;
       }
       change_state_dash();
-   } else if(grappleIntent() == 1) {
+   } else if (handler._kGrapple) {
       //Override double jump stuff
       handle_grapple();
       state = handle_grapple;
@@ -247,7 +255,7 @@ handle_grounded = function() {
    if(tongueInst != noone) {
       state = handle_grapple;
    }
-   if(jumpIntent() == 1) {
+   if (handler._kJump) {
       jump(jumpHeight);
    }
    //this solves clipping into blocks in 1 tile tall tunnels
@@ -259,11 +267,11 @@ handle_grounded = function() {
    //welp, this is broken now, we need to find a new way to check
    //for ceilings before jumping - ibums
    
-   if(grappleIntent() == 1) {
+   if (handler._kGrapple) {
       //When grappling on the ground, we want to skip handling ground movement and instead,
       //use the grapple movement
       state = handle_grapple;
-   } else if(dashIntent()) {
+   } else if (handler._kDash) {
       change_state_dash();
    } else {
       handle_moving_ground();
@@ -271,15 +279,15 @@ handle_grounded = function() {
 }
 
 handle_jumping = function () {
-   if jumpIntent() == 2 and jump_height_modifier < jumpHeightModifierMax {
+   if (handler._kJumpHold and jump_height_modifier < jumpHeightModifierMax) {
    	vspeed = vspeed - (7 / jump_height_modifier);
    	++jump_height_modifier;
-   } else if jumpIntent() == 0 {
+   } else if (!handler._kJump) {
       state = handle_airborne;
    	jump_height_modifier = 1;
    }
    
-   if(grappleIntent() == 1) {
+   if(handler._kGrapple) {
       //Override double jump stuff
       handle_grapple();
       state = handle_grapple;
@@ -329,7 +337,7 @@ handle_attack = function() {
 
 handle_dash = function() {
    //Downdash
-   if(yIntent() == 1) {
+   if(handler._kDown) {
       vspeed = terminalVelocity;
       gravity = 0;
       hspeed = 0;
@@ -351,7 +359,7 @@ handle_dash = function() {
       hspeed = facing * dashSpeed;
    }
    
-   if(jumpIntent() == 1) {
+   if(handler._kJump) {
       jump(jumpHeight);
       if(!is_grounded()) {
          jumpCharges = 0;   
@@ -410,8 +418,8 @@ function update_camera() {
 }
 
 function update_facing() {
-   if(xIntent() != 0 && !dashing) {
-      facing = xIntent();
+   if((handler._kLeft || handler._kRight) && !dashing) {
+      facing = handler._kLeft ? -1 : 1;
    }
 }
 
@@ -431,7 +439,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
 } else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
    gravity = grav;
-   if(jumpIntent() == 0 && !dashing && !walljumping) {
+   if((!handler._kJump && !handler._kJumpHold) && !dashing && !walljumping) {
       state = handle_airborne;
    }
    
@@ -443,7 +451,7 @@ if place_meeting(x, y + vspeed + 1, obj_block)  {
 }
 
 //Magnet to walls for wall jumps in the air
-if((dashIntent() == 1 || jumpIntent() == 1) && !is_grounded()) {
+if((handler._kDash || handler._kJump) && !is_grounded()) {
    wall_jump_check();
 }
 

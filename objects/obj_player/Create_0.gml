@@ -1,4 +1,5 @@
 event_inherited();
+handler = instance_find(obj_input_handler, 0);
 jump = false;
 jump_height_modifier = 1;
 _friction = 0.5;
@@ -6,7 +7,7 @@ _acceleration = 0.75;
 airborne = false;
 grapple_charge = 0;
 grav = .75
-terminalVelocity = 10;
+terminalVelocity = 15;
 walljumping = false;
 
 //colision vars

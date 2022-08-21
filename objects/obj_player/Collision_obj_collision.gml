@@ -1,4 +1,1 @@
 print("mind goblin");
-
-
-
