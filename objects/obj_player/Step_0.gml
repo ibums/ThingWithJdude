@@ -433,7 +433,6 @@ if place_meeting(x, y + vspeed + 1, obj_block)  {
 }
 
 //Magnet to walls for wall jumps in the air
-print(" ", jumpIntent(), " ",!is_grounded());
 if(jumpIntent() == 1 && !is_grounded()) {
    wall_jump_check();
 }
@@ -466,3 +465,5 @@ update_attack_input();
 // Update camera to follow player
 update_camera();
 check_collision();
+
+print(x, ", ", y)

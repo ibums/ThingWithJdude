@@ -70,22 +70,22 @@ if vspeed=0 {check_collision_horizontal()}
 var line_top_left, line_top_right, line_bottom_left, line_bottom_right;
 
 if hspeed < 0 or vspeed < 0{
-   line_top_left = collision_line_point(bbox_left, bbox_top, bbox_left + hspeed, bbox_top + vspeed,
+   line_top_left = collision_line_point(round(bbox_left), round(bbox_top), round(bbox_left) + hspeed, round(bbox_top) + vspeed,
    obj_collision, false, true);  
 }
 
 if hspeed > 0 or vspeed < 0{
-line_top_right = collision_line_point(bbox_right-1, bbox_top, bbox_right-1 + hspeed, bbox_top + vspeed,
+line_top_right = collision_line_point(round(bbox_right)-1, round(bbox_top), round(bbox_right)-1 + hspeed, round(bbox_top) + vspeed,
 obj_collision, false, true);
 }
 
 if hspeed < 0 or vspeed > 0{
-line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1, bbox_left + hspeed, bbox_bottom-1 + vspeed,
+line_bottom_left = collision_line_point(round(bbox_left), round(bbox_bottom), round(bbox_left) + hspeed, round(bbox_bottom) + vspeed,
 obj_collision, false, true);
 }
 
 if hspeed > 0 or vspeed > 0{  
-line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1, bbox_right-1 + hspeed, bbox_bottom-1 + vspeed,
+line_bottom_right = collision_line_point(round(bbox_right)-1, round(bbox_bottom), round(bbox_right)-1 + hspeed, round(bbox_bottom) + vspeed,
 obj_collision, false, true);
 }
 
@@ -106,7 +106,11 @@ var bbox_width = bbox_right - bbox_left;
       }
       
       if (round(main_line[2]) = round(other_line_x[2])){
-   
+         
+         if (vspeed>0){
+            gravity = 0
+            state = handle_grounded;
+            }
          y = round(main_line[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          check_collision_horizontal();
