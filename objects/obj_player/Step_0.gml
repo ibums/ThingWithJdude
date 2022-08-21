@@ -91,10 +91,10 @@ function wall_jump_check(){
    }
 
    if line_top_right[0] != noone or line_bottom_right[0] != noone {
-      x_right = round(min(line_top_right[1], line_bottom_right[1]));
+      x_right = floor(min(line_top_right[1], line_bottom_right[1]));
    }
    if line_top_left[0] != noone or line_bottom_left[0] != noone {
-      x_left = round(max(line_top_left[1], line_bottom_left[1]));
+      x_left = ceil(max(line_top_left[1], line_bottom_left[1]));
    }
    
    if abs(x - x_right) < abs(x - x_left){
