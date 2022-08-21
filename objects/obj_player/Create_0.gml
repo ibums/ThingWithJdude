@@ -41,8 +41,8 @@ jumpHeightModifierMax = 4;
 doubleJumpHorizontalSpeed = 2;
 
 //Wall jump vars
-wallJumpSpeed = 10;
-wallJumpTime = 2;
+wallJumpSpeed = 13;
+wallJumpTime = 4;
 
 //Dash vars
 maxDashCharges = 1;

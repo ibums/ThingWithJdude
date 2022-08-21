@@ -59,7 +59,8 @@ function try_snap_to_object_left_wall(object) {
       }
    }
 }
-function wall_jump_check(){
+
+function wall_jump_check() {
    
    var x_left = 999;
    
@@ -71,7 +72,7 @@ function wall_jump_check(){
    
    var buffer = bbox_width/1.5;
       //this can be adjusted to taste.
-   var no_jump_zone = bbox_height/4;
+   var no_jump_zone = bbox_height / 4;
    
    var line_top_right = collision_line_point(bbox_right-1, bbox_top + no_jump_zone,
    bbox_right-1 + buffer, bbox_top + no_jump_zone, obj_collision, false, true);
@@ -212,6 +213,12 @@ handle_airborne = function () {
          hspeed = doubleJumpHorizontalSpeed * xIntent();
       }
       jump(doubleJumpHeight);   
+   } else if (rightwall xor leftwall) and dashIntent() == 1 {
+   	state = handle_dash;
+      dashing = true;
+   } else if (rightwall and leftwall) and dashIntent() == 1 {
+      state = handle_dash;
+      dashing = true;
    }
    //Dash if dash button is used and you have dash charges. Downdash does not require a charge
    if(dashIntent() && (dashCharges > 0 || yIntent() == 1)) {
@@ -333,10 +340,15 @@ handle_dash = function() {
       } else {
          state = handle_airborne;
       }
+   } else if((leftwall || rightwall) && !is_grounded() && alarm[0] == dashTime - 1) {
+      vspeed = 0;
+      gravity = 0;
+      facing = leftwall ? 1 : -1;
+      hspeed = facing * dashSpeed;
    } else { //Side Dash
       vspeed = 0;
       gravity = 0;
-      hspeed = facing * dashSpeed;   
+      hspeed = facing * dashSpeed;
    }
    
    if(jumpIntent() == 1) {
@@ -367,7 +379,6 @@ function change_state_dash() {
    state = handle_dash;
 }
 function make_tongue() {
-   print("GRAPPLE");
    var theta = facing == 1 ? 0 : degtorad(180);
    maxXAim = maxGrappleLen * cos(theta) + x;
    maxYAim = maxGrappleLen * sin(theta) + y;   
@@ -375,7 +386,6 @@ function make_tongue() {
    
    //Dont shoot tongue if missed
    if(ret[0] == noone) {
-      print("NOTHING");
       return noone; //Do nothing
    }
    grappleDir = theta;
@@ -433,7 +443,7 @@ if place_meeting(x, y + vspeed + 1, obj_block)  {
 }
 
 //Magnet to walls for wall jumps in the air
-if(jumpIntent() == 1 && !is_grounded()) {
+if((dashIntent() == 1 || jumpIntent() == 1) && !is_grounded()) {
    wall_jump_check();
 }
 
@@ -446,10 +456,7 @@ if(state == pointer_null) {
 }
 
 if(grappleboosted) {
-   //Set the grapple boost time alarm
-   if(alarm[0] == -1) {
-      alarm[0] = grappleBoostTime;
-   }
+   //Set the grapple boost time alarm   
    state = handle_grapple;
    grapple_boost();
 }
@@ -464,6 +471,7 @@ update_attack_input();
 
 // Update camera to follow player
 update_camera();
+if(debugIntent()) {
+   print("DEBUG");
+}
 check_collision();
-
-print(x, ", ", y)
