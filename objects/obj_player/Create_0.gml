@@ -2,11 +2,12 @@ event_inherited();
 jump = false;
 jump_height_modifier = 1;
 _friction = 0.5;
-_acceleration = 0.75;
+_acceleration = 0.25;
 airborne = false;
 grapple_charge = 0;
 grav = .75
 terminalVelocity = 15;
+walljumping = false;
 
 //colision vars
 check_for_walls();
@@ -14,7 +15,7 @@ horzBuffer = 1;
 
 //various ability vars
 attackInst = noone;
-maxMoveSpeed = 10;
+maxMoveSpeed = 5;
 
 //Grapple Vars
 grappleBoostAcceleration = .5;
@@ -38,8 +39,10 @@ maxJumpCharges = 1;
 jumpHeight = -1;
 jumpHeightModifierMax = 4;
 doubleJumpHorizontalSpeed = 2;
-wallJumpSpeed = 10;
 
+//Wall jump vars
+wallJumpSpeed = 10;
+wallJumpTime = 2;
 
 //Dash vars
 maxDashCharges = 1;

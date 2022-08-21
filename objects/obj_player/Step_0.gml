@@ -1,5 +1,4 @@
 #region collision
-check_collision();
 function set_grounded() {
    gravity = 0;
    vspeed = 0;
@@ -68,27 +67,28 @@ function wall_jump_check(){
    
    var bbox_width = bbox_right - bbox_left;
    
-   var buffer = bbox_width/2;
+   var bbox_height = bbox_bottom - bbox_top;
+   
+   var buffer = bbox_width/1.5;
       //this can be adjusted to taste.
+   var no_jump_zone = bbox_height/4;
    
-   var line_top_right = collision_line_point(bbox_right-1, bbox_top, bbox_right-1 + buffer, bbox_top,
-   obj_collision, false, true);
+   var line_top_right = collision_line_point(bbox_right-1, bbox_top + no_jump_zone,
+   bbox_right-1 + buffer, bbox_top + no_jump_zone, obj_collision, false, true);
    
-   var line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1, bbox_right-1 + buffer, bbox_bottom-1,
-   obj_collision, false, true);
+   var line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1 - no_jump_zone,
+   bbox_right-1 + buffer, bbox_bottom-1 - no_jump_zone, obj_collision, false, true);
    
-   var line_top_left = collision_line_point(bbox_left, bbox_top, bbox_left - buffer, bbox_top,
-   obj_collision, false, true);
+   var line_top_left = collision_line_point(bbox_left, bbox_top + no_jump_zone,
+   bbox_left - buffer, bbox_top + no_jump_zone, obj_collision, false, true);
    
-   var line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1, bbox_left - buffer, bbox_bottom-1,
-   obj_collision, false, true);
+   var line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1 - no_jump_zone,
+   bbox_left - buffer, bbox_bottom-1 - no_jump_zone, obj_collision, false, true);
 
    if line_top_right[0] = noone and line_bottom_right[0] = noone
    and line_top_left[0] = noone and line_bottom_left[0] = noone{
       return false;
-      exit;
    }
-   else {return true}
 
    if line_top_right[0] != noone or line_bottom_right[0] != noone {
       x_right = round(min(line_top_right[1], line_bottom_right[1]));
@@ -103,6 +103,10 @@ function wall_jump_check(){
    else{
       x = x_left + bbox_width/2;
    }
+   
+   hspeed = 0;
+   vspeed = 0;
+   return true;
 }
 
 #endregion collision
@@ -184,13 +188,22 @@ handle_wallGrabIdle = function() {
    //TODO: implement if needed
 }
 
+handle_walljump = function() {
+   if(alarm[1] == -1) {
+      alarm[1] = wallJumpTime;
+   }
+   vspeed = 0;
+   gravity = 0;
+}
+
 handle_airborne = function () {
    jump_height_modifier = 1;
    if (rightwall xor leftwall) and jumpIntent() == 1 {
-   	vspeed = -2 * wallJumpSpeed;
-   	hspeed = rightwall ? -wallJumpSpeed : wallJumpSpeed;
+   	state = handle_walljump;
+      walljumping = true;
    } else if (rightwall and leftwall) and jumpIntent() == 1 {
-      vspeed = -2 * wallJumpSpeed + wallJumpSpeed / 2;
+      state = handle_walljump;
+      walljumping = true;
    } else if(jumpIntent() == 1 && jumpCharges > 0) {
       jumpCharges--;
       //Ensure if the player is trying to double jump the opposite direction they are moving
@@ -408,7 +421,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
 } else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
    //Check if we should be falling
    gravity = grav;
-   if(jumpIntent() == 0 && !dashing) {
+   if(jumpIntent() == 0 && !dashing && !walljumping) {
       state = handle_airborne;
    }
    
@@ -417,6 +430,12 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
 if place_meeting(x, y + vspeed + 1, obj_block)  {
    //moving platforms we want to be able to jump through the bottom
 	try_snap_to_object_ceiling(obj_block);
+}
+
+//Magnet to walls for wall jumps in the air
+print(" ", jumpIntent(), " ",!is_grounded());
+if(jumpIntent() == 1 && !is_grounded()) {
+   wall_jump_check();
 }
 
 check_for_walls();
@@ -446,3 +465,4 @@ update_attack_input();
 
 // Update camera to follow player
 update_camera();
+check_collision();

@@ -1,3 +1,3 @@
 /// @description Dash Alarm
-state = handle_grounded;
+state = is_grounded() ? handle_grounded : handle_airborne;
 dashing = false;
