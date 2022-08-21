@@ -35,3 +35,7 @@ function dashIntent() {
    else return 0;
 }
 
+function debugIntent() {
+    if(keyboard_check_pressed(vk_numpad7)) return 1;
+   else return 0;
+}
