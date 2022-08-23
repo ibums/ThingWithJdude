@@ -50,9 +50,9 @@ function check_collision_horizontal(){
          
          if line_bottom[0] != noone and line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
             print("dlkgnm,bvnb");
-               gravity = 0;
-               x = x + hspeed * cos(pi/4) - hspeed;
-               y = y - hspeed * sin(pi/4);
+               var extra = hspeed < 1 ? 1 - hspeed : 0;
+               x = x + hspeed * cos(pi/4) - hspeed + (1-hspeed) + extra;
+               y = floor(y - hspeed * sin(pi/4));
                print("fjdlkasjflksad");
                exit
 
