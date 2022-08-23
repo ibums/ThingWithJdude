@@ -26,11 +26,11 @@ function check_collision_vertical(){
          
       
       vspeed = 0;
-      exit
+      return;
    }
 
 }
-   
+
 function check_collision_horizontal(){
    
    var bbox_width = bbox_right - bbox_left;
@@ -45,17 +45,12 @@ function check_collision_horizontal(){
    obj_collision, true, true);
 
    if line_top[0] != noone or line_bottom[0] != noone {
-   
-      if hspeed > 0 {
-         
-         if line_bottom[0] != noone and line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
-            print("dlkgnm,bvnb");
-               var extra = hspeed < 1 ? 1 - hspeed : 0;
-               x = x + hspeed * cos(pi/4) - hspeed + (1-hspeed) + extra;
-               y = floor(y - hspeed * sin(pi/4));
-               print("fjdlkasjflksad");
-               exit
 
+      if hspeed > 0 {
+         if line_bottom[0] != noone and line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
+               x = x + hspeed * cos(pi/4) - hspeed;
+               y = y - hspeed * sin(pi/4);
+               return;
          }
          
          x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
@@ -64,25 +59,27 @@ function check_collision_horizontal(){
       else  x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
       
       hspeed = 0;
-      exit;
+      return;
    }
 }
    
 //if not moving
-if hspeed=0 and vspeed=0 {exit}
+if hspeed=0 and vspeed=0 {
+  return;
+}
 
 //moving straight up or down
 if hspeed=0 {
    check_collision_vertical()
-   exit
+   return;
    }
    
 
 //moving straight left or right
 if vspeed=0 {
    check_collision_horizontal()
-   exit
-   }
+   return;
+}
 
 
 var line_top_left, line_top_right, line_bottom_left, line_bottom_right;
@@ -113,8 +110,8 @@ var bbox_height = bbox_bottom - bbox_top;
 var bbox_width = bbox_right - bbox_left;
 
    if (main_line[0] = noone and other_line_x[0] = noone and other_line_y[0] = noone) {
-         print("hi duck");
-         exit}
+      return;
+   }
    
    if (main_line[0] != noone and other_line_x[0] != noone and other_line_y[0] != noone) {
       
@@ -131,13 +128,13 @@ var bbox_width = bbox_right - bbox_left;
          x = floor(main_line[1])-sign(hspeed)*bbox_width/2;
          hspeed = 0;
          check_collision_vertical();
-         exit
+         return;
          }
          else{
          x = ceil(main_line[1])-sign(hspeed)*bbox_width/2;
          hspeed = 0;
          check_collision_vertical();
-         exit
+         return;
          }
       }
       
@@ -149,13 +146,13 @@ var bbox_width = bbox_right - bbox_left;
             y = floor(main_line[2])-sign(vspeed)*bbox_height/2;
             vspeed = 0;
             check_collision_horizontal();
-            exit
+            return;
          }
          else{
             y = ceil(main_line[2])-sign(vspeed)*bbox_height/2;
             vspeed = 0;
             check_collision_horizontal();
-            exit
+            return;
          }
       }
       
@@ -166,7 +163,7 @@ var bbox_width = bbox_right - bbox_left;
          y = max(ceil(main_line[2]), ceil(other_line_x[2]))-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          check_collision_horizontal();
-         exit
+         return;
       }
       else{
           y = min(floor(main_line[2]), floor(other_line_x[2]))-sign(vspeed)*bbox_height/2;
@@ -174,7 +171,7 @@ var bbox_width = bbox_right - bbox_left;
          gravity = 0;
          state = handle_grounded;
          check_collision_horizontal();
-         exit
+         return;
       }
    }
 
@@ -184,13 +181,13 @@ var bbox_width = bbox_right - bbox_left;
          x = max(ceil(main_line[1]), ceil(other_line_y[1]))-sign(hspeed)*bbox_width/2;
          hspeed = 0;
          check_collision_vertical();
-         exit
+         return;
       }
       else{
          x = min(floor(main_line[1]), floor(other_line_y[1]))-sign(hspeed)*bbox_width/2;
          hspeed = 0;
          check_collision_vertical();
-         exit
+         return;
       }
   }
   
@@ -201,7 +198,7 @@ var bbox_width = bbox_right - bbox_left;
          x = round(other_line_y[1])-sign(hspeed)*bbox_width/2;
          hspeed = 0;
          check_collision_vertical();
-         exit
+         return;
       }
          
       if other_line_y[0].is_floor(other_line_y[1], other_line_y[2]) and vspeed>0{
@@ -211,7 +208,7 @@ var bbox_width = bbox_right - bbox_left;
             hspeed = 0;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_vertical();
-            exit
+            return;
          }
          
          else if hspeed<0{
@@ -219,7 +216,7 @@ var bbox_width = bbox_right - bbox_left;
             hspeed = 0;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_vertical();
-            exit
+            return;
          }
       }           
       if other_line_y[0].is_ceiling(other_line_y[1], other_line_y[2]) and vspeed<0{
@@ -229,7 +226,7 @@ var bbox_width = bbox_right - bbox_left;
             hspeed = 0;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_vertical();
-            exit
+            return;
          }
          
          else if hspeed<0{
@@ -237,7 +234,7 @@ var bbox_width = bbox_right - bbox_left;
             hspeed = 0;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_vertical();         
-            exit
+            return;
          }
       }
    }
@@ -250,7 +247,7 @@ var bbox_width = bbox_right - bbox_left;
          gravity = 0;
          state = handle_grounded;
          check_collision_horizontal();
-         exit
+         return;
       }
       
       if other_line_x[0].is_ceiling(other_line_x[1], other_line_x[2]) and vspeed < 0{
@@ -258,7 +255,7 @@ var bbox_width = bbox_right - bbox_left;
          y = round(other_line_x[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          check_collision_horizontal();
-         exit
+         return;
       }
          
       if other_line_x[0].is_wall(other_line_x[1], other_line_x[2]){
@@ -270,7 +267,7 @@ var bbox_width = bbox_right - bbox_left;
             state = handle_grounded;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_horizontal();
-            exit
+            return;
          }
          
          else if vspeed<0{
@@ -278,7 +275,7 @@ var bbox_width = bbox_right - bbox_left;
             vspeed = 0;
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_horizontal();
-            exit
+            return;
          }
       }
             
@@ -291,14 +288,14 @@ var bbox_width = bbox_right - bbox_left;
          gravity = 0;
          state = handle_grounded;
          check_collision_horizontal();     
-         exit
+         return;
       }
       
       if main_line[0].is_ceiling(main_line[1], main_line[2]) and vspeed < 0 {
          y = round(main_line[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          check_collision_horizontal(); 
-         exit
+         return;
       }
       
       if main_line[0].is_wall(main_line[1], main_line[2]) {
@@ -306,14 +303,14 @@ var bbox_width = bbox_right - bbox_left;
             x = main_line[0].bbox_left-sign(hspeed)*bbox_width/2;
             hspeed = 0;
             check_collision_vertical();
-            exit
+            return;
          }
          
          else if hspeed<0{
             x = main_line[0].bbox_right-sign(hspeed)*bbox_width/2;
             hspeed = 0;
             check_collision_vertical();       
-            exit
+            return;
          }
       }
    }

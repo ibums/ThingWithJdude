@@ -36,7 +36,7 @@ function try_snap_to_object_right_wall(object) {
       hspeed = 0;
       foundwall = false;
       for(var ix = 0; !foundwall; ix++) {
-         if place_meeting(x + ix, y, obj_block) {
+         if place_meeting(x + ix, y, obj_collision) {
       		x = x + ix - 1;
       		foundwall = true;
             print("snap to right");
@@ -51,7 +51,7 @@ function try_snap_to_object_left_wall(object) {
    	hspeed = 0;
       foundwall = false;
       for(var ix = 0; !foundwall; ix++) {
-         if place_meeting(x - ix, y, obj_block) {
+         if place_meeting(x - ix, y, obj_collision) {
    			x = x - ix + 1;
    			foundwall = true;
             print("snap to left");
@@ -436,7 +436,7 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
-} else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block) {
+} else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_collision) {
    //Check if we should be falling
    gravity = grav;
    if((!handler._kJump && !handler._kJumpHold) && !dashing && !walljumping) {
@@ -445,9 +445,9 @@ if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
    
 }
 
-if place_meeting(x, y + vspeed + 1, obj_block)  {
+if place_meeting(x, y + vspeed + 1, obj_collision)  {
    //moving platforms we want to be able to jump through the bottom
-	try_snap_to_object_ceiling(obj_block);
+	try_snap_to_object_ceiling(obj_collision);
 }
 
 //Magnet to walls for wall jumps in the air
