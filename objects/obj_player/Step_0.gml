@@ -366,7 +366,15 @@ handle_dash = function() {
 
 #region helperFunctions
 function is_grounded() {
-   return place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_block);
+   //return place_meeting(x, y + max(0, vspeed) + 1, obj_collision);
+   
+   var line_left = collision_line_point(bbox_left, y, bbox_left, bbox_bottom+2,
+   obj_collision, true, true);
+   
+   var line_right = collision_line_point(bbox_right-1, y, bbox_right-1, bbox_bottom+2,
+   obj_collision, true, true);
+   
+   return line_left != noone or line_right !=noone and vspeed >= 0;
 }
 
 function change_state_dash() {

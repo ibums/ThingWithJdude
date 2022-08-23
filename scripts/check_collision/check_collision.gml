@@ -1,6 +1,33 @@
 
 function check_collision() { 
    
+   function check_downward_slope() {
+      
+      if is_grounded {
+         
+         var bbox_height = bbox_bottom - bbox_top;
+            
+         var stickyness = 31;
+         //this controls how fast we can go before flying off a slope, keep this number below 32 - ibums
+            
+         var line_slope_check_left = collision_line_point(bbox_left + hspeed, y,
+         bbox_left + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
+         
+         var line_slope_check_right = collision_line_point(bbox_right-1 + hspeed, y,
+         bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
+            
+         if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2]{
+            
+            y = round(line_slope_check_left[2]) - bbox_height/2;
+         }
+         
+         if hspeed < 0 and line_slope_check_left[2] > line_slope_check_right[2]{
+            
+            y = round(line_slope_check_right[2]) - bbox_height/2;
+         }
+      }
+   }
+   
    function check_collision_vertical() {
    
       var bbox_height = bbox_bottom - bbox_top;
@@ -50,8 +77,14 @@ function check_collision() {
    
       var line_bottom2 = collision_line_point(x, bbox_bottom - 2, bbox_x + hspeed, bbox_bottom - 2,
       obj_collision, true, true);
+      
+      if line_top[0] = noone and (line_bottom[0] = noone and line_bottom2[0] = noone) {
+      
+         check_downward_slope();
+         return;
+      }
    
-      if line_top[0] != noone or (line_bottom[0] != noone or line_bottom2[0] != noone) {
+      else {
       
          var lin = line_bottom[0] != noone  ? line_bottom : line_bottom2;
          if(hspeed > 0) {
