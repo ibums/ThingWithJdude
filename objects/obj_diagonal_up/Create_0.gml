@@ -1,5 +1,5 @@
 function is_floor(x_point,y_point){
-   if y_point-y=round(x-x_point-1) return true
+   if round(y_point-y)=round(x-x_point-1) return true
    else return false
    }
 

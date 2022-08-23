@@ -46,16 +46,16 @@ function check_collision_horizontal(){
 
    if line_top[0] != noone or line_bottom[0] != noone {
    
-      if hspeed > 0{
+      if hspeed > 0 {
          
          if line_bottom[0] != noone and line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
             print("dlkgnm,bvnb");
-            if x+hspeed<line_bottom[0].bbox_right{
-               x= line_bottom[1] + sqrt((sqr(x+hspeed-line_bottom[1]))/2);
-               y= y - sqrt((sqr(x+hspeed-line_bottom[1]))/2);
+               gravity = 0;
+               x = x + hspeed * cos(pi/4) - hspeed;
+               y = y - hspeed * sin(pi/4);
                print("fjdlkasjflksad");
                exit
-            }
+
          }
          
          x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
@@ -64,7 +64,7 @@ function check_collision_horizontal(){
       else  x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
       
       hspeed = 0;
-      exit
+      exit;
    }
 }
    
@@ -107,16 +107,16 @@ line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1, bbox_right
 obj_collision, true, true);
 }
 
-function check_collision_diagonal(main_line, other_line_x, other_line_y){
+function check_collision_diagonal(main_line, other_line_x, other_line_y) {
    
 var bbox_height = bbox_bottom - bbox_top;
 var bbox_width = bbox_right - bbox_left;
 
-   if (main_line[0] = noone and other_line_x[0] = noone and other_line_y[0] = noone){
+   if (main_line[0] = noone and other_line_x[0] = noone and other_line_y[0] = noone) {
          print("hi duck");
          exit}
    
-   if (main_line[0] != noone and other_line_x[0] != noone and other_line_y[0] != noone){
+   if (main_line[0] != noone and other_line_x[0] != noone and other_line_y[0] != noone) {
       
       if (round(main_line[1]) = round(other_line_y[1]))
       and (round(main_line[2]) = round(other_line_x[2])){
@@ -124,8 +124,6 @@ var bbox_width = bbox_right - bbox_left;
          if hspeed>0 {x = floor(main_line[1])-sign(hspeed)*bbox_width/2}
          else {x = ceil(main_line[1])-sign(hspeed)*bbox_width/2}
          hspeed = 0;
-         
-         
       }
       
       if (round(main_line[1]) = round(other_line_y[1])){
@@ -285,11 +283,9 @@ var bbox_width = bbox_right - bbox_left;
       }
             
    }
-         print(main_line[0], ", ", other_line_x[0], ", ", other_line_y[0]);
-   if (main_line[0] != noone and other_line_x[0] = noone and other_line_y[0] = noone){
 
-      if main_line[0].is_floor(main_line[1], main_line[2]) and vspeed > 0{
-         print("diagonal");
+   if (main_line[0] != noone and other_line_x[0] = noone and other_line_y[0] = noone) {
+      if main_line[0].is_floor(main_line[1], main_line[2]) and vspeed > 0 {
          y = round(main_line[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          gravity = 0;
@@ -297,15 +293,15 @@ var bbox_width = bbox_right - bbox_left;
          check_collision_horizontal();     
          exit
       }
-      if main_line[0].is_ceiling(main_line[1], main_line[2]) and vspeed < 0{
       
+      if main_line[0].is_ceiling(main_line[1], main_line[2]) and vspeed < 0 {
          y = round(main_line[2])-sign(vspeed)*bbox_height/2;
          vspeed = 0;
          check_collision_horizontal(); 
          exit
       }
-      if main_line[0].is_wall(main_line[1], main_line[2]){
-         
+      
+      if main_line[0].is_wall(main_line[1], main_line[2]) {
          if hspeed>0{
             x = main_line[0].bbox_left-sign(hspeed)*bbox_width/2;
             hspeed = 0;
