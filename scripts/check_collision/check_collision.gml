@@ -51,7 +51,7 @@ function check_collision() {
       var line_bottom2 = collision_line_point(x, bbox_bottom - 2, bbox_x + hspeed, bbox_bottom - 2,
       obj_collision, true, true);
    
-      if line_top[0] != noone or (line_bottom[0] != noone || line_bottom2[0] != noone) {
+      if line_top[0] != noone or (line_bottom[0] != noone or line_bottom2[0] != noone) {
       
          var lin = line_bottom[0] != noone  ? line_bottom : line_bottom2;
          if(hspeed > 0) {

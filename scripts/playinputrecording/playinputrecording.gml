@@ -11,7 +11,7 @@ function PlayInputRecording(){
        inputHandler._kAttack = false;
        inputHandler._kGrapple = false;
        inputHandler._kJump = false;
-       while (_index < array_height_2d(_inputSequence) && _inputSequence[_index, 0] == _frame)
+       while (_index < array_height_2d(_inputSequence) and _inputSequence[_index, 0] == _frame)
        {
            switch (_inputSequence[_index, 1])
            {

@@ -2,7 +2,7 @@
 //https://developer.amazon.com/blogs/appstore/post/3bb65890-7230-431f-836e-35455ae996bf/easy-input-replay-system-in-gamemaker-studio-2
 event_inherited();
 var recorder = instance_find(obj_input_recorder, 0);
-if (recorder != noone && !recorder._isPlaying)
+if (recorder != noone and !recorder._isPlaying)
 {
    _kLeft = xIntent() == -1;
    _kRight = xIntent() == 1;

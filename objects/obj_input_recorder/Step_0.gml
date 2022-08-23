@@ -3,7 +3,7 @@ event_inherited();
 // Step Event Part 1
 
 // Turn recording on if not currently on playback
-if (_kRecord && !_isPlaying)
+if (_kRecord and !_isPlaying)
 {
     // Save the recording
     if (_isRecording)
@@ -33,7 +33,7 @@ if (_isRecording)
 // Step Event Part 3
 
 // If the play hotkey is pressed and we are not recording, start playing
-if (_kPlay && !_isRecording)
+if (_kPlay and !_isRecording)
 {
     _isPlaying = !_isPlaying;
     

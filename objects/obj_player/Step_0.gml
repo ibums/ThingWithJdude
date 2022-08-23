@@ -74,34 +74,34 @@ function wall_jump_check() {
       //this can be adjusted to taste.
    var no_jump_zone = bbox_height / 4;
    
-   var line_top_right = collision_line_point(bbox_right-1, bbox_top + no_jump_zone,
+   var line_top_right = collision_line_point(bbox_right - 1, bbox_top + no_jump_zone,
    bbox_right-1 + buffer, bbox_top + no_jump_zone, obj_collision, false, true);
    
-   var line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1 - no_jump_zone,
+   var line_bottom_right = collision_line_point(bbox_right - 1, bbox_bottom - 1 - no_jump_zone,
    bbox_right-1 + buffer, bbox_bottom-1 - no_jump_zone, obj_collision, false, true);
    
    var line_top_left = collision_line_point(bbox_left, bbox_top + no_jump_zone,
    bbox_left - buffer, bbox_top + no_jump_zone, obj_collision, false, true);
    
-   var line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1 - no_jump_zone,
+   var line_bottom_left = collision_line_point(bbox_left, bbox_bottom - 1 - no_jump_zone,
    bbox_left - buffer, bbox_bottom-1 - no_jump_zone, obj_collision, false, true);
 
    if line_top_right[0] = noone and line_bottom_right[0] = noone
-   and line_top_left[0] = noone and line_bottom_left[0] = noone{
+   and line_top_left[0] = noone and line_bottom_left[0] = noone {
       return false;
    }
 
    if line_top_right[0] != noone or line_bottom_right[0] != noone {
       x_right = floor(min(line_top_right[1], line_bottom_right[1]));
    }
+   
    if line_top_left[0] != noone or line_bottom_left[0] != noone {
       x_left = ceil(max(line_top_left[1], line_bottom_left[1]));
    }
    
    if abs(x - x_right) < abs(x - x_left){
       x = x_right - bbox_width/2;
-   }
-   else{
+   } else {
       x = x_left + bbox_width/2;
    }
    
@@ -124,7 +124,7 @@ function handle_moving_ground() {
       hspeed = hspeed + _acceleration;
    }
 
-   if !(handler._kLeft || handler._kRight) or abs(hspeed) > maxMoveSpeed{
+   if !(handler._kLeft or handler._kRight) or abs(hspeed) > maxMoveSpeed{
    	if hspeed > 0 {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
@@ -147,7 +147,7 @@ function handle_moving_air() {
       hspeed = hspeed + _acceleration;
    }
 
-   if (!(handler._kLeft || handler._kRight)) {
+   if (!(handler._kLeft or handler._kRight)) {
    	if (hspeed > 0) {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
@@ -205,11 +205,11 @@ handle_airborne = function () {
    } else if ((rightwall and leftwall) and handler._kJump) {
       state = handle_walljump;
       walljumping = true;
-   } else if(handler._kJump && jumpCharges > 0) {
+   } else if(handler._kJump and jumpCharges > 0) {
       jumpCharges--;
       //Ensure if the player is trying to double jump the opposite direction they are moving
       //Set their horizontal velocity to 0
-      if((hspeed > 0 && handler._kLeft) || (hspeed < 0 && handler._kRight)) {
+      if((hspeed > 0 and handler._kLeft) or (hspeed < 0 and handler._kRight)) {
          var djumpdir = 1;
          
          if(handler._kLeft) {
@@ -229,7 +229,7 @@ handle_airborne = function () {
       dashing = true;
    }
    //Dash if dash button is used and you have dash charges. Downdash does not require a charge
-   if (handler._kDash && (dashCharges > 0 || handler._kDown)) {
+   if (handler._kDash and (dashCharges > 0 or handler._kDown)) {
       if (!handler._kDown) {
          dashCharges = 0;
       }
@@ -291,7 +291,7 @@ handle_grapple = function() {
    aimX = mouse_x;
    aimY = mouse_y;
    grapple_charge = 0;
-   if(tongueInst == noone && make_tongue() == noone) {
+   if(tongueInst == noone and make_tongue() == noone) {
       //TODO save previous state and use it here
       state = handle_grounded;
       return;
@@ -340,7 +340,7 @@ handle_dash = function() {
       } else {
          state = handle_airborne;
       }
-   } else if((leftwall || rightwall) && !is_grounded() && alarm[0] == dashTime - 1) {
+   } else if((leftwall or rightwall) and !is_grounded() and alarm[0] == dashTime - 1) {
       vspeed = 0;
       gravity = 0;
       facing = leftwall ? 1 : -1;
@@ -410,7 +410,7 @@ function update_camera() {
 }
 
 function update_facing() {
-   if((handler._kLeft || handler._kRight) && !dashing) {
+   if((handler._kLeft or handler._kRight) and !dashing) {
       facing = handler._kLeft ? -1 : 1;
    }
 }
@@ -424,14 +424,14 @@ function set_grapple_boosted() {
 
 #region movingPlatform
 var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
-if (movingPlatform && bbox_bottom <= movingPlatform.bbox_top + 1) {
+if (movingPlatform and bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
 } else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_collision) {
    //Check if we should be falling
    gravity = grav;
-   if((!handler._kJump && !handler._kJumpHold) && !dashing && !walljumping) {
+   if((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping) {
       state = handle_airborne;
    }
    
@@ -443,7 +443,7 @@ if place_meeting(x, y + vspeed + 1, obj_collision)  {
 }
 
 //Magnet to walls for wall jumps in the air
-if((handler._kDash || handler._kJump) && !is_grounded()) {
+if((handler._kDash or handler._kJump) and !is_grounded()) {
    wall_jump_check();
 }
 
