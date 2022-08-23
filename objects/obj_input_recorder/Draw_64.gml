@@ -8,14 +8,12 @@ draw_text_color(150, 45, "Press F5 to restart the room", color, color, color, co
 
 var text = "";
 
-if (_isRecording)
-{
+if (_isRecording) {
     color = c_red;
     text = "Recording";
 }
 
-if (_isPlaying)
-{
+if (_isPlaying) {
     color = c_yellow;
     text = "Playing";
 }

@@ -86,20 +86,19 @@ function wall_jump_check() {
    var line_bottom_left = collision_line_point(bbox_left, bbox_bottom - 1 - no_jump_zone,
    bbox_left - buffer, bbox_bottom-1 - no_jump_zone, obj_collision, false, true);
 
-   if line_top_right[0] = noone and line_bottom_right[0] = noone
-   and line_top_left[0] = noone and line_bottom_left[0] = noone {
+   if (line_top_right[0] = noone and line_bottom_right[0] = noone and line_top_left[0] = noone and line_bottom_left[0] = noone) {
       return false;
    }
 
-   if line_top_right[0] != noone or line_bottom_right[0] != noone {
+   if (line_top_right[0] != noone or line_bottom_right[0] != noone) {
       x_right = floor(min(line_top_right[1], line_bottom_right[1]));
    }
    
-   if line_top_left[0] != noone or line_bottom_left[0] != noone {
+   if (line_top_left[0] != noone or line_bottom_left[0] != noone) {
       x_left = ceil(max(line_top_left[1], line_bottom_left[1]));
    }
    
-   if abs(x - x_right) < abs(x - x_left){
+   if (abs(x - x_right) < abs(x - x_left)) {
       x = x_right - bbox_width/2;
    } else {
       x = x_left + bbox_width/2;
@@ -116,21 +115,21 @@ function wall_jump_check() {
 
 function handle_moving_ground() {
    //Update if we want to have air movement different from ground movement
-   if handler._kLeft and !leftwall and hspeed > -maxMoveSpeed {
+   if (handler._kLeft and !leftwall and hspeed > -maxMoveSpeed) {
    	hspeed = hspeed - _acceleration;
    }
 
-   if handler._kRight and !rightwall and hspeed < maxMoveSpeed {
+   if (handler._kRight and !rightwall and hspeed < maxMoveSpeed) {
       hspeed = hspeed + _acceleration;
    }
 
-   if !(handler._kLeft or handler._kRight) or abs(hspeed) > maxMoveSpeed{
-   	if hspeed > 0 {
+   if (!(handler._kLeft or handler._kRight) or abs(hspeed) > maxMoveSpeed) {
+   	if (hspeed > 0) {
    		hspeed = hspeed - _friction;
    		hspeed = hspeed - _friction < 0 ? 0 : hspeed - _friction;
    	}
       
-   	if hspeed < 0 {
+   	if (hspeed < 0) {
    		hspeed = hspeed + _friction;
    		hspeed = hspeed + _friction > 0 ? 0 : hspeed + _friction;
    	}
@@ -161,7 +160,7 @@ function handle_moving_air() {
 }
 
 function update_attack_input() {
-   if(handler._kAttack) {
+   if (handler._kAttack) {
       handle_attack();
    }
 }
@@ -190,7 +189,7 @@ handle_wallGrabIdle = function() {
 }
 
 handle_walljump = function() {
-   if(alarm[1] == -1) {
+   if (alarm[1] == -1) {
       alarm[1] = wallJumpTime;
    }
    vspeed = 0;
@@ -205,16 +204,16 @@ handle_airborne = function () {
    } else if ((rightwall and leftwall) and handler._kJump) {
       state = handle_walljump;
       walljumping = true;
-   } else if(handler._kJump and jumpCharges > 0) {
+   } else if (handler._kJump and jumpCharges > 0) {
       jumpCharges--;
       //Ensure if the player is trying to double jump the opposite direction they are moving
       //Set their horizontal velocity to 0
-      if((hspeed > 0 and handler._kLeft) or (hspeed < 0 and handler._kRight)) {
+      if ((hspeed > 0 and handler._kLeft) or (hspeed < 0 and handler._kRight)) {
          var djumpdir = 1;
          
-         if(handler._kLeft) {
+         if (handler._kLeft) {
             djumpdir = -1;
-         } else if(handler._kRight) {
+         } else if (handler._kRight) {
             djumpdir = 1;
          }
          
@@ -279,7 +278,7 @@ handle_jumping = function () {
    	jump_height_modifier = 1;
    }
    
-   if(handler._kGrapple) {
+   if (handler._kGrapple) {
       //Override double jump stuff
       handle_grapple();
       state = handle_grapple;
@@ -291,18 +290,18 @@ handle_grapple = function() {
    aimX = mouse_x;
    aimY = mouse_y;
    grapple_charge = 0;
-   if(tongueInst == noone and make_tongue() == noone) {
+   if (tongueInst == noone and make_tongue() == noone) {
       //TODO save previous state and use it here
       state = handle_grounded;
       return;
    }
    
-   if(!tongueInst.reachedDestination) {
+   if (!tongueInst.reachedDestination) {
       //Pull ourselves to the destination
      // handle_moving_air();
    } else {
       //Reached enemy, start pulling ourselves to enemy 
-      if(distance_to_point(tongueInst.x, tongueInst.y) > grappleEndRadius) {
+      if (distance_to_point(tongueInst.x, tongueInst.y) > grappleEndRadius) {
          facing = sign(tongueInst.destinationX - x);
          move_towards_point(tongueInst.destinationX, tongueInst.destinationY, grappleSpeed);
       } else {
@@ -329,18 +328,18 @@ handle_attack = function() {
 
 handle_dash = function() {
    //Downdash
-   if(handler._kDown) {
+   if (handler._kDown) {
       vspeed = terminalVelocity;
       gravity = 0;
       hspeed = 0;
       alarm[0] = -1; //downdash is only one frame
       dashing = false;
-      if(is_grounded()) {
+      if (is_grounded()) {
          state = handle_grounded;
       } else {
          state = handle_airborne;
       }
-   } else if((leftwall or rightwall) and !is_grounded() and alarm[0] == dashTime - 1) {
+   } else if ((leftwall or rightwall) and !is_grounded() and alarm[0] == dashTime - 1) {
       vspeed = 0;
       gravity = 0;
       facing = leftwall ? 1 : -1;
@@ -351,9 +350,9 @@ handle_dash = function() {
       hspeed = facing * dashSpeed;
    }
    
-   if(handler._kJump) {
+   if (handler._kJump) {
       jump(jumpHeight);
-      if(!is_grounded()) {
+      if (!is_grounded()) {
          jumpCharges = 0;   
       }
       alarm[0] = -1;
@@ -372,7 +371,7 @@ function is_grounded() {
 
 function change_state_dash() {
    //Set alarm for dashing. Dash until alarm is over. Alarm handles state change
-   if(alarm[0] == -1) {
+   if (alarm[0] == -1) {
       alarm[0] = dashTime;
    }
    dashing = true;
@@ -385,7 +384,7 @@ function make_tongue() {
    var ret = collision_line_point(x, y,  maxXAim, maxYAim, obj_enemy, true, true);
    
    //Dont shoot tongue if missed
-   if(ret[0] == noone) {
+   if (ret[0] == noone) {
       return noone; //Do nothing
    }
    grappleDir = theta;
@@ -410,13 +409,13 @@ function update_camera() {
 }
 
 function update_facing() {
-   if((handler._kLeft or handler._kRight) and !dashing) {
+   if ((handler._kLeft or handler._kRight) and !dashing) {
       facing = handler._kLeft ? -1 : 1;
    }
 }
 
 function set_grapple_boosted() {
-   if(tongueInst != noone) {
+   if (tongueInst != noone) {
       grappleboosted = true;
    }
 }
@@ -428,22 +427,22 @@ if (movingPlatform and bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
-} else if !place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_collision) {
+} else if (!place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_collision)) {
    //Check if we should be falling
    gravity = grav;
-   if((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping) {
+   if ((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping) {
       state = handle_airborne;
    }
    
 }
 
-if place_meeting(x, y + vspeed + 1, obj_collision)  {
+if (place_meeting(x, y + vspeed + 1, obj_collision))  {
    //moving platforms we want to be able to jump through the bottom
 	try_snap_to_object_ceiling(obj_collision);
 }
 
 //Magnet to walls for wall jumps in the air
-if((handler._kDash or handler._kJump) and !is_grounded()) {
+if ((handler._kDash or handler._kJump) and !is_grounded()) {
    wall_jump_check();
 }
 
@@ -451,11 +450,11 @@ check_for_walls();
 #endregion movingPlatform
 
 // If for whatever reason state is null, just set the state to idle
-if(state == pointer_null) {
+if (state == pointer_null) {
    state = handle_idle;
 }
 
-if(grappleboosted) {
+if (grappleboosted) {
    //Set the grapple boost time alarm   
    state = handle_grapple;
    grapple_boost();
@@ -471,7 +470,9 @@ update_attack_input();
 
 // Update camera to follow player
 update_camera();
-if(debugIntent()) {
+
+if (debugIntent()) {
    print("DEBUG");
 }
+
 check_collision();

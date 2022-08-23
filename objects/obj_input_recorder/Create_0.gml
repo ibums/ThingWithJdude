@@ -4,8 +4,7 @@
 MakeUnique();
 
 // Keys Enum
-enum eKey
-{
+enum eKey {
     LeftPressed = 0,
     RightPressed,
     UpPressed,
