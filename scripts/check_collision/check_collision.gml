@@ -47,6 +47,16 @@ function check_collision_horizontal(){
    if line_top[0] != noone or line_bottom[0] != noone {
    
       if hspeed > 0{
+         
+         if line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
+            print("dlkgnm,bvnb");
+            {
+               x= line_bottom[1] + sqrt((sqr(x+hspeed-line_bottom[1]))/2);
+               y= y - sqrt((sqr(x+hspeed-line_bottom[1]))/2);
+               print("fjdlkasjflksad");
+            }
+         }
+         
          x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
       }
 
