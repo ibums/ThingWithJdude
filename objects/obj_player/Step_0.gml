@@ -139,11 +139,11 @@ function handle_moving_ground() {
 
 //Update if we want to have air movement different from ground movement
 function handle_moving_air() {
-   if (handler._kLeft and !leftwall and hspeed > -maxMoveSpeed) {
+   if (handler._kLeft and !leftwall and hspeed > -maxMoveSpeed and !walljumping) {
    	hspeed = hspeed - _acceleration;
    }
 
-   if (handler._kRight and !rightwall and hspeed < maxMoveSpeed) {
+   if (handler._kRight and !rightwall and hspeed < maxMoveSpeed and !walljumping) {
       hspeed = hspeed + _acceleration;
    }
 
@@ -258,14 +258,6 @@ handle_grounded = function() {
    if (handler._kJump) {
       jump(jumpHeight);
    }
-   //this solves clipping into blocks in 1 tile tall tunnels
-   //however if a moving platform or other collission object
-   //that we should be able to jump through is above us,
-   //it will also stop us from jumping. Maybe we can give blocks
-   //like that a seperate atribute that we can check for? - ibums
-   
-   //welp, this is broken now, we need to find a new way to check
-   //for ceilings before jumping - ibums
    
    if (handler._kGrapple) {
       //When grappling on the ground, we want to skip handling ground movement and instead,
