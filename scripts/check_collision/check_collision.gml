@@ -31,7 +31,11 @@ function check_collision_vertical(){
 
 }
 
-function check_collision_horizontal(){
+function reduce_precision(num) {
+   return floor(num * 10)/10;
+}
+
+function check_collision_horizontal() {
    
    var bbox_width = bbox_right - bbox_left;
    
@@ -41,22 +45,38 @@ function check_collision_horizontal(){
    var line_top = collision_line_point(bbox_x, bbox_top, bbox_x + hspeed, bbox_top,
    obj_collision, true, true);
    
-   var line_bottom = collision_line_point(bbox_x, bbox_bottom-1, bbox_x + hspeed, bbox_bottom-1,
+   var line_bottom = collision_line_point(x, bbox_bottom - 0.25, bbox_x + hspeed, bbox_bottom - 0.25,
    obj_collision, true, true);
-
-   if line_top[0] != noone or line_bottom[0] != noone {
-
-      if hspeed > 0 {
-         if line_bottom[0] != noone and line_bottom[0].is_floor(line_bottom[1], line_bottom[2]){
-               x = x + hspeed * cos(pi/4) - hspeed;
-               y = y - hspeed * sin(pi/4);
+   
+   var line_bottom2 = collision_line_point(x, bbox_bottom - 2, bbox_x + hspeed, bbox_bottom - 2,
+   obj_collision, true, true);
+   
+   if line_top[0] != noone or (line_bottom[0] != noone || line_bottom2[0] != noone) {
+      
+      var lin = line_bottom[0] != noone  ? line_bottom : line_bottom2;
+      if(hspeed > 0) {
+         if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
+               var anglecos = reduce_precision(cos(pi/4));
+               var anglesin = reduce_precision(sin(pi/4));
+               
+               x = x + hspeed * anglecos - hspeed;
+               y = y - hspeed * anglesin;
                return;
          }
          
          x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
+      } else if (hspeed < 0) {
+         if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
+               var anglecos = reduce_precision(cos(pi/4));
+               var anglesin = reduce_precision(sin(pi/4));
+               
+               x = x + hspeed * anglecos - hspeed;
+               y = y + hspeed * anglesin;
+               return;
+         }
+      } else {
+         x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
       }
-
-      else  x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
       
       hspeed = 0;
       return;

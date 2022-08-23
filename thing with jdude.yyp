@@ -4,6 +4,7 @@
     {"id":{"name":"spr_tongue","path":"sprites/spr_tongue/spr_tongue.yy",},"order":1,},
     {"id":{"name":"obj_player","path":"objects/obj_player/obj_player.yy",},"order":0,},
     {"id":{"name":"obj_input_handler","path":"objects/obj_input_handler/obj_input_handler.yy",},"order":18,},
+    {"id":{"name":"obj_diagonal_down","path":"objects/obj_diagonal_down/obj_diagonal_down.yy",},"order":10,},
     {"id":{"name":"spr_diagonal_up","path":"sprites/spr_diagonal_up/spr_diagonal_up.yy",},"order":1,},
     {"id":{"name":"obj_moving_platform_point","path":"objects/obj_moving_platform_point/obj_moving_platform_point.yy",},"order":0,},
     {"id":{"name":"spr_checkpoint_spawn","path":"sprites/spr_checkpoint_spawn/spr_checkpoint_spawn.yy",},"order":0,},
