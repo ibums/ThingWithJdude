@@ -33,7 +33,7 @@ function check_collision() {
       var bbox_height = bbox_bottom - bbox_top;
    
       if (vspeed > 0) {
-         var bbox_y = bbox_bottom-1;
+         var bbox_y = bbox_bottom-0.25;
       } else {
          var bbox_y = bbox_top;
       }

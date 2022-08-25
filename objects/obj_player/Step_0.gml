@@ -374,7 +374,16 @@ function is_grounded() {
    var line_right = collision_line_point(bbox_right-1, y, bbox_right-1, bbox_bottom+2,
    obj_collision, true, true);
    
-   return line_left != noone or line_right !=noone and vspeed >= 0;
+   var line_left_semi = collision_line_point(bbox_left, y, bbox_left, bbox_bottom+2,
+   obj_semisolid, true, true);
+   
+   var line_right_semi = collision_line_point(bbox_right-1, y, bbox_right-1, bbox_bottom+2,
+   obj_semisolid, true, true);
+   //we could make a parent to obj_collision called obj_standable
+   //or something to avoid having to do 2 checks? - ibums
+   
+   return line_left != noone or line_right !=noone
+   or line_left_semi != noone or line_right_semi !=noone and vspeed >= 0;
 }
 
 function change_state_dash() {
@@ -482,5 +491,7 @@ update_camera();
 if (debugIntent()) {
    print("DEBUG");
 }
+
+check_semisolid_collision();
 
 check_collision();
