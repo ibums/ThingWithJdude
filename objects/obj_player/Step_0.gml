@@ -374,16 +374,16 @@ function is_grounded() {
    var line_right = collision_line_point(bbox_right-1, y, bbox_right-1, bbox_bottom+2,
    obj_collision, true, true);
    
-   var line_left_semi = collision_line_point(bbox_left, y, bbox_left, bbox_bottom+2,
+   var line_left_semi = collision_line_point(bbox_left, bbox_bottom, bbox_left, bbox_bottom+2,
    obj_semisolid, true, true);
    
-   var line_right_semi = collision_line_point(bbox_right-1, y, bbox_right-1, bbox_bottom+2,
+   var line_right_semi = collision_line_point(bbox_right-1, bbox_bottom, bbox_right-1, bbox_bottom+2,
    obj_semisolid, true, true);
-   //we could make a parent to obj_collision called obj_standable
-   //or something to avoid having to do 2 checks? - ibums
-   
-   return line_left != noone or line_right !=noone
-   or line_left_semi != noone or line_right_semi !=noone and vspeed >= 0;
+  
+   return (line_left[0] != noone or line_right[0] != noone and vspeed >= 0)
+   or ((line_left_semi[0] != noone or line_right_semi[0] != noone)
+   and line_left[0] = noone and line_right[0] = noone and vspeed >= 0
+   and !handler._kDown);
 }
 
 function change_state_dash() {
@@ -444,7 +444,7 @@ if (movingPlatform and bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
-} else if (!place_meeting(x + hspeed, y + max(0, vspeed) + 1, obj_collision)) {
+} else if !is_grounded() {
    //Check if we should be falling
    gravity = grav;
    if ((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping) {

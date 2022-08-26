@@ -5,10 +5,7 @@
   "managed": true,
   "spriteMaskId": null,
   "persistent": false,
-  "parentObjectId": {
-    "name": "obj_standable",
-    "path": "objects/obj_standable/obj_standable.yy",
-  },
+  "parentObjectId": null,
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
@@ -29,7 +26,7 @@
     "path": "folders/Objects/blocks.yy",
   },
   "resourceVersion": "1.0",
-  "name": "obj_collision",
+  "name": "obj_standable",
   "tags": [],
   "resourceType": "GMObject",
 }
