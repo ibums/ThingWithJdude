@@ -64,6 +64,7 @@ function check_collision() {
    function check_collision_horizontal() {
    
       var bbox_width = bbox_right - bbox_left;
+      var bbox_height = bbox_bottom - bbox_top;
    
       if hspeed > 0 var bbox_x = bbox_right-1;
       else var bbox_x = bbox_left;
@@ -86,29 +87,24 @@ function check_collision() {
       else {
       
          var lin = line_bottom[0] != noone  ? line_bottom : line_bottom2;
-         if(hspeed > 0) {
-            if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
+         if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
                   var anglecos = reduce_precision(cos(pi/4));
                   var anglesin = reduce_precision(sin(pi/4));
-               
+                  
                   x = x + hspeed * anglecos - hspeed;
-                  y = y - hspeed * anglesin;
-                  return;
-            }
-         
-            x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
-         } else if (hspeed < 0) {
-            if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
-                  var anglecos = reduce_precision(cos(pi/4));
-                  var anglesin = reduce_precision(sin(pi/4));
-               
-                  x = x + hspeed * anglecos - hspeed;
-                  y = y + hspeed * anglesin;
+                  
+                  var line_final_position = collision_line_point(bbox_x, bbox_top - abs(hspeed) * anglesin,
+                  bbox_x, bbox_bottom - abs(hspeed) * anglesin, obj_collision, true, true); 
+
+                  y = floor(line_final_position[2]-bbox_height/2);
+                  //y = y - abs(hspeed) * anglesin;
                   return;
             }
             
-            x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
-         } 
+         if(hspeed > 0) {x = round(min(line_top[1], line_bottom[1]))-bbox_width/2}
+         
+         else if (hspeed < 0) {x = round(max(line_top[1], line_bottom[1]))+bbox_width/2}
+         
          hspeed = 0;
          return;
       }
