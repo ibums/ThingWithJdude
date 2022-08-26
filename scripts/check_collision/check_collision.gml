@@ -3,7 +3,7 @@ function check_collision() {
    
    function check_downward_slope() {
       
-      if is_grounded {
+      if (is_grounded()) {
          
          var bbox_height = bbox_bottom - bbox_top;
             
@@ -17,12 +17,10 @@ function check_collision() {
          bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
             
          if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2]{
-            
-            y = round(line_slope_check_left[2]) - bbox_height/2;
+            y = line_slope_check_left[2] - bbox_height/2;
          }
          
          if hspeed < 0 and line_slope_check_left[2] > line_slope_check_right[2]{
-            
             y = round(line_slope_check_right[2]) - bbox_height/2;
          }
       }
