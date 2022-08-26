@@ -221,11 +221,9 @@ handle_airborne = function () {
       }
       jump(doubleJumpHeight);   
    } else if ((rightwall xor leftwall) and handler._kDash) {
-   	state = handle_dash;
-      dashing = true;
+   	 change_state_dash();
    } else if ((rightwall and leftwall) and handler._kDash) {
-      state = handle_dash;
-      dashing = true;
+   	 change_state_dash();
    }
    //Dash if dash button is used and you have dash charges. Downdash does not require a charge
    if (handler._kDash and (dashCharges > 0 or handler._kDown)) {
@@ -377,9 +375,9 @@ function is_grounded() {
    var line_left_semi = collision_line_point(bbox_left, bbox_bottom, bbox_left, bbox_bottom+2,
    obj_semisolid, true, true);
    
-   var line_right_semi = collision_line_point(bbox_right-1, bbox_bottom, bbox_right-1, bbox_bottom+2,
+   var line_right_semi = collision_line_point(bbox_right, bbox_bottom, bbox_right-1, bbox_bottom+2,
    obj_semisolid, true, true);
-  
+
    return (line_left[0] != noone or line_right[0] != noone and vspeed >= 0)
    or ((line_left_semi[0] != noone or line_right_semi[0] != noone)
    and line_left[0] = noone and line_right[0] = noone and vspeed >= 0

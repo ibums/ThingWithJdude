@@ -16,12 +16,16 @@ function check_collision() {
          var line_slope_check_right = collision_line_point(bbox_right-1 + hspeed, y,
          bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
             
-         if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2]{
-            y = line_slope_check_left[2] - bbox_height/2;
+         if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2] {
+            
+            y = round(line_slope_check_left[2] - bbox_height/2);
          }
          
-         if hspeed < 0 and line_slope_check_left[2] > line_slope_check_right[2]{
-            y = round(line_slope_check_right[2]) - bbox_height/2;
+         if hspeed < 0 and line_slope_check_left[2] > line_slope_check_right[2] {
+            
+            y = round(line_slope_check_right[2] - bbox_height/2);
+            //these need to be round or floor or else when half on a block 
+            //your y will be a weird decimal - ibums
          }
       }
    }
@@ -73,7 +77,7 @@ function check_collision() {
       var line_bottom = collision_line_point(x, bbox_bottom - 0.25, bbox_x + hspeed, bbox_bottom - 0.25,
       obj_collision, true, true);
    
-      var line_bottom2 = collision_line_point(x, bbox_bottom - 2, bbox_x + hspeed, bbox_bottom - 2,
+      var line_bottom2 = collision_line_point(x, bbox_bottom - 1, bbox_x + hspeed, bbox_bottom - 1,
       obj_collision, true, true);
       
       if line_top[0] = noone and (line_bottom[0] = noone and line_bottom2[0] = noone) {
@@ -105,10 +109,9 @@ function check_collision() {
                   y = y + hspeed * anglesin;
                   return;
             }
-         } else {
+            
             x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
-         }
-      
+         } 
          hspeed = 0;
          return;
       }
