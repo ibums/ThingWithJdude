@@ -2,8 +2,6 @@
 function check_collision() { 
    
    function check_downward_slope() {
-      
-      if (is_grounded()) {
          
          var bbox_height = bbox_bottom - bbox_top;
             
@@ -11,10 +9,10 @@ function check_collision() {
          //this controls how fast we can go before flying off a slope, keep this number below 32 - ibums
             
          var line_slope_check_left = collision_line_point(bbox_left + hspeed, y,
-         bbox_left + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
+         bbox_left + hspeed, bbox_bottom + stickyness, obj_standable, true, true)
          
          var line_slope_check_right = collision_line_point(bbox_right-1 + hspeed, y,
-         bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_collision, true, true)
+         bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_standable, true, true)
             
          if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2] {
             
@@ -26,7 +24,6 @@ function check_collision() {
             y = round(line_slope_check_right[2] - bbox_height/2);
             //these need to be round or floor or else when half on a block 
             //your y will be a weird decimal - ibums
-         }
       }
    }
    
