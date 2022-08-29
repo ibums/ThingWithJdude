@@ -1,0 +1,1 @@
+if global.button == 0 {image_index = 0}

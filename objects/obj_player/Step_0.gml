@@ -312,7 +312,7 @@ handle_grapple = function() {
 
 handle_attack = function() {
    var _list = ds_list_create();
-   var _num = collision_circle_list(x, y, meleeOffset, obj_enemy, false, true, _list, false);
+   var _num = collision_circle_list(x, y, meleeOffset, obj_attackable, false, true, _list, false);
    if (_num > 0) {
        for (var i = 0; i < _num; ++i) {
           attackInst = instance_create_layer(_list[| i].x, _list[| i].y, "Instances", obj_melee_hitbox);
