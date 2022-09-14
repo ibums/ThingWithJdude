@@ -46,7 +46,7 @@ x + quarterWidth, bbox_bottom, obj_collision, true, true);
 
  draw_set_colour(c_aqua);
  var distfrombboxright = abs(bbox_right - (bbox_right - quarterWidth));
- 
+
 if(line_final_position2[0] != noone){
  draw_line(x - quarterWidth,bbox_top - abs(hspeed) * .7, x - quarterWidth, bbox_bottom+(distfrombboxright));
  }

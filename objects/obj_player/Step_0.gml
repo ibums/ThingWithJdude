@@ -403,7 +403,7 @@ function is_grounded() {
    
    var line_right_semi = collision_line_point(bbox_right-1, bbox_bottom, bbox_right-1, bbox_bottom+2,
    obj_semisolid, true, true);
-  
+
    return (line_left[0] != noone or line_right[0] != noone and vspeed >= 0)
    or ((line_left_semi[0] != noone or line_right_semi[0] != noone)
    and line_left[0] = noone and line_right[0] = noone and vspeed >= 0
@@ -476,7 +476,7 @@ function end_grapple_hover() {
          vspd += grappleBoostVSpeed * 2;
       } else {
          hspd += grappleBoostHSpeed * 2;
-      }
+   }
    } else if(grappleJump && grappleDash) {
       vspd += grappleBoostVSpeed;
       hspd += grappleBoostHSpeed;
