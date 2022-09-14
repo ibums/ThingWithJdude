@@ -221,9 +221,11 @@ handle_airborne = function () {
       }
       jump(doubleJumpHeight);   
    } else if ((rightwall xor leftwall) and handler._kDash) {
-   	 change_state_dash();
+      state = handle_dash;
+      dashing = true;
    } else if ((rightwall and leftwall) and handler._kDash) {
-   	 change_state_dash();
+      state = handle_dash;
+      dashing = true;
    }
    //Dash if dash button is used and you have dash charges. Downdash does not require a charge
    if (handler._kDash and (dashCharges > 0 or handler._kDown)) {
@@ -305,9 +307,33 @@ handle_grapple = function() {
       } else {
         instance_destroy(tongueInst);
         tongueInst = noone;
-        state = handle_airborne;
+        state = handle_grapple_hover;
+        grappleHoverStoredVSpeed = vspeed;
+        grappleHoverStoredHSpeed = hspeed;
+        print("Stored: ", grappleHoverStoredVSpeed, " ", grappleHoverStoredHSpeed);
+        hspeed = 0;
+        vspeed = 0;
+        handle_grapple_hover();
       }
    }
+}
+
+handle_grapple_hover = function() {
+   print("hover");
+   grappleHovering = true;
+   if(handler._kJump) {
+      print("JUMP");
+      grappleJump = true;
+   }
+   if(handler._kDash) {
+      print("DASH");
+      grappleDash = true;
+   }
+   //If this is the first time we get into grapple hover, we want to set the timer
+   if (alarm[2] == -1) {
+      alarm[2] = grappleHoverTime;
+   }
+   gravity = 0;
 }
 
 handle_attack = function() {
@@ -375,9 +401,9 @@ function is_grounded() {
    var line_left_semi = collision_line_point(bbox_left, bbox_bottom, bbox_left, bbox_bottom+2,
    obj_semisolid, true, true);
    
-   var line_right_semi = collision_line_point(bbox_right, bbox_bottom, bbox_right-1, bbox_bottom+2,
+   var line_right_semi = collision_line_point(bbox_right-1, bbox_bottom, bbox_right-1, bbox_bottom+2,
    obj_semisolid, true, true);
-
+  
    return (line_left[0] != noone or line_right[0] != noone and vspeed >= 0)
    or ((line_left_semi[0] != noone or line_right_semi[0] != noone)
    and line_left[0] = noone and line_right[0] = noone and vspeed >= 0
@@ -429,23 +455,53 @@ function update_facing() {
    }
 }
 
-function set_grapple_boosted() {
-   if (tongueInst != noone) {
-      grappleboosted = true;
+//GRAPPLE BOOST OLD
+//function set_grapple_boosted() {
+//   if (tongueInst != noone) {
+//      grappleboosted = true;
+//   }
+//}
+#endregion
+#region stateTransitionFunctions
+function end_grapple_hover() {
+   grappleHovering = false;
+   state = is_grounded() ? handle_grounded : handle_airborne;
+   var vspd = grappleHoverStoredVSpeed;
+   var hspd = grappleHoverStoredHSpeed;
+   
+   print(grappleJump, " ", grappleDash);
+   //Handle grapple jump or grapple dash boosts
+   if(grappleJump xor grappleDash) {
+      if(grappleJump) {
+         vspd += grappleBoostVSpeed * 2;
+      } else {
+         hspd += grappleBoostHSpeed * 2;
+      }
+   } else if(grappleJump && grappleDash) {
+      vspd += grappleBoostVSpeed;
+      hspd += grappleBoostHSpeed;
    }
+   
+   vspeed = vspd;
+   hspeed = hspd;
+   print("Restore: ", grappleHoverStoredVSpeed, " ", grappleHoverStoredHSpeed);
+   grappleHoverStoredVSpeed = 0;
+   grappleHoverStoredHSpeed = 0;
+   grappleJump = false;
+   grappleDash = false;
+   print("HOVER DONE");
 }
 #endregion
-
 #region movingPlatform
 var movingPlatform = instance_place(x, y + vspeed + max(1, vspeed), obj_moving_platform);
 if (movingPlatform and bbox_bottom <= movingPlatform.bbox_top + 1) {
    try_snap_to_object_ground(obj_moving_platform);
    x+= movingPlatform.moveX;
    y+= movingPlatform.moveY;
-} else if !is_grounded() {
+} else if (!is_grounded()) {
    //Check if we should be falling
    gravity = grav;
-   if ((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping) {
+   if ((!handler._kJump and !handler._kJumpHold) and !dashing and !walljumping and !grappleHovering) {
       state = handle_airborne;
    }
    
@@ -469,11 +525,12 @@ if (state == pointer_null) {
    state = handle_idle;
 }
 
-if (grappleboosted) {
-   //Set the grapple boost time alarm   
-   state = handle_grapple;
-   grapple_boost();
-}
+//GRAPPLEBOOSTOLD
+//if (grappleboosted) {
+//   //Set the grapple boost time alarm   
+//   state = handle_grapple;
+//   grapple_boost();
+//}
 
 // Update the player facing variable before updating state
 update_facing();

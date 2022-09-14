@@ -33,6 +33,16 @@ maxXAim = 0;
 maxYAim = 0;
 grappling = false;
 
+//Grapple Hover Vars
+grappleHoverTime = 6;
+grappleHovering = false;
+grappleHoverStoredVSpeed = 0;
+grappleHoverStoredHSpeed = 0;
+grappleBoostVSpeed = -7;
+grappleBoostHSpeed = 10;
+grappleJump = false;
+grappleDash = false;
+
 //Jummp Vars
 doubleJumpHeight = -3;
 jumpCharges = 1;
