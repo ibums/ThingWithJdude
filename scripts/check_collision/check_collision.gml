@@ -197,9 +197,7 @@ function check_collision() {
             hspeed = 0;
             check_collision_vertical();
             return;
-         }
-         
-         else if ((other_line_y[0].is_floor(other_line_y[1], other_line_y[2]) or
+         } else if ((other_line_y[0].is_floor(other_line_y[1], other_line_y[2]) or
          (other_line_y[0].is_ceiling(other_line_y[1], other_line_y[2]))) and vspeed > 0) {
             if (hspeed > 0){
                x = other_line_y[0].bbox_left-sign(hspeed)*bbox_width/2;
@@ -210,44 +208,34 @@ function check_collision() {
             print("rare corner case, hopefully nothing breaks when this prints");
             check_collision_vertical();
             return;
+         } else {
+            print("ERROR: collision found something that is not a wall, ceiling, or floor");
+            return;
          }
       }
    
       if (main_line[0] = noone and other_line_x[0] != noone and other_line_y[0] = noone) {
          if (other_line_x[0].is_floor(other_line_x[1], other_line_x[2]) and vspeed > 0) {
-            y = round(other_line_x[2])-sign(vspeed)*bbox_height/2;
-            vspeed = 0;
+            y = round(other_line_x[2]) - sign(vspeed)*bbox_height/2;
             gravity = 0;
             state = handle_grounded;
-            check_collision_horizontal();
-            return;
-         }
-      
-         if (other_line_x[0].is_ceiling(other_line_x[1], other_line_x[2]) and vspeed < 0) {
-         
-            y = round(other_line_x[2])-sign(vspeed)*bbox_height/2;
-            vspeed = 0;
-            check_collision_horizontal();
-            return;
-         }
-         
-         if (other_line_x[0].is_wall(other_line_x[1], other_line_x[2])) {
+         } else if (other_line_x[0].is_ceiling(other_line_x[1], other_line_x[2]) and vspeed < 0) {
+            y = round(other_line_x[2]) - sign(vspeed)*bbox_height/2;
+         } else if (other_line_x[0].is_wall(other_line_x[1], other_line_x[2])) {
             if (vspeed > 0) {
                y = other_line_x[0].bbox_top-sign(vspeed)*bbox_height/2;
-               vspeed = 0;
                gravity = 0;
                state = handle_grounded;
-               print("rare corner case, hopefully nothing breaks when this prints");
-               check_collision_horizontal();
-               return;
             } else if (vspeed < 0) {
                y = other_line_x[0].bbox_bottom-sign(vspeed)*bbox_height/2;
-               vspeed = 0;
-               print("rare corner case, hopefully nothing breaks when this prints");
-               check_collision_horizontal();
-               return;
             }
-         }     
+         } else {
+            print("ERROR: collision found something that is not a wall, ceiling, or floor");
+         }
+         
+         check_collision_horizontal();
+         vspeed = 0;
+         return;
       }
 
       if (main_line[0] != noone and other_line_x[0] = noone and other_line_y[0] = noone) {
