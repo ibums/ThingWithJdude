@@ -11,7 +11,6 @@ function check_downward_slope() {
    bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_standable, true, true)
             
    if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2] {
-            
       y = round(line_slope_check_left[2] - bbox_height/2);
    }
          
@@ -24,12 +23,7 @@ function check_downward_slope() {
    
 function check_collision_vertical() { 
    var bbox_height = bbox_bottom - bbox_top;
-   var bbox_y = 0;
-   if (vspeed > 0) {
-      bbox_y = bbox_bottom - 0.25;
-   } else {
-      bbox_y = bbox_top;
-   }
+   var bbox_y = vspeed > 0 ? (bbox_bottom - 0.25) : bbox_top;
    
    var line_left = collision_line_point(bbox_left, bbox_y, bbox_left, bbox_y + vspeed,
    obj_collision, true, true);
@@ -39,14 +33,11 @@ function check_collision_vertical() {
 
    if (line_left[0] != noone or line_right[0] != noone) {
       if (vspeed > 0) {
-         gravity = 0;
          y = round(min(line_left[2], line_right[2]))-bbox_height/2;
-         state = handle_grounded;
       } else {
          y = round(max(line_left[2], line_right[2]))+bbox_height/2;
       }
-
-      vspeed = 0;
+      update_v_speed_and_gravity();
       return;
    }
 }
@@ -103,16 +94,16 @@ function check_collision_horizontal() {
 }
 
 function update_player_parameters_horizontal() {
-   update_v_speed();
-   vspeed = 0;
+   update_v_speed_and_gravity();
    check_collision_horizontal();
 }
 
-function update_v_speed() {
+function update_v_speed_and_gravity() {
    if(vspeed > 0) {
       gravity = 0;
       state = handle_grounded;
    }
+   vspeed = 0;
 }
 
 function snap_to_horizontal_surface_special(line_in, bbox_height) {
