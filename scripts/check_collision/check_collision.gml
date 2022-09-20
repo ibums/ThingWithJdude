@@ -56,15 +56,15 @@ function reduce_precision(num) {
 }
 
 function check_is_floor(lin) {
-   lin[0].is_floor(lin[1], lin[2])
+   lin[0].is_floor(lin[1], lin[2]);
 }
 
 function check_is_wall(lin) {
-   lin[0].is_wall(lin[1], lin[2])
+   lin[0].is_wall(lin[1], lin[2]);
 }
 
 function check_is_ceiling(lin) {
-   lin[0].is_ceiling(lin[1], lin[2])
+   lin[0].is_ceiling(lin[1], lin[2]);
 }
 
 function check_collision_horizontal() {
@@ -287,13 +287,13 @@ function check_collision() {
 
    //moving straight up or down
    if (hspeed == 0) {
-      check_collision_vertical()
+      check_collision_vertical();
       return;
    }  
 
    //moving straight left or right
    if (vspeed == 0) {
-      check_collision_horizontal()
+      check_collision_horizontal();
       return;
    }
 
