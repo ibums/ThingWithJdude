@@ -47,15 +47,15 @@ function reduce_precision(num) {
 }
 
 function check_is_floor(lin) {
-   lin[0].is_floor(lin[1], lin[2]);
+   return lin[0].is_floor(lin[1], lin[2]);
 }
 
 function check_is_wall(lin) {
-   lin[0].is_wall(lin[1], lin[2]);
+   return lin[0].is_wall(lin[1], lin[2]);
 }
 
 function check_is_ceiling(lin) {
-   lin[0].is_ceiling(lin[1], lin[2]);
+   return lin[0].is_ceiling(lin[1], lin[2]);
 }
 
 function check_collision_horizontal() {
@@ -74,21 +74,26 @@ function check_collision_horizontal() {
       
    if line_top[0] = noone and (line_bottom[0] = noone and line_bottom2[0] = noone) {
       check_downward_slope();
+      return;
    } else {
       var lin = line_bottom[0] != noone ? line_bottom : line_bottom2;
       if (lin[0] != noone and lin[0].is_floor(lin[1], lin[2])) {
          var anglecos = reduce_precision(cos(pi/4));
-         var anglesin = reduce_precision(sin(pi/4));       
-         x += hspeed * anglecos - hspeed;                 
+         var anglesin = reduce_precision(sin(pi/4));
+         x += (hspeed * anglecos - hspeed);
+
          var line_final_position = collision_line_point(bbox_x + hspeed * anglecos, bbox_top - abs(hspeed) * anglesin,
          bbox_x + hspeed * anglecos, bbox_bottom - abs(hspeed) * anglesin, obj_collision, true, true); 
+
          y = floor(line_final_position[2]-bbox_height/2);
-      } else if (hspeed > 0) {
-         x = round(min(line_top[1], line_bottom[1]))-bbox_width/2;
-      } else if (hspeed < 0) {
-         x = round(max(line_top[1], line_bottom[1]))+bbox_width/2;
+         return;
       }
-         
+
+      if (hspeed > 0) {
+        x = round(min(line_top[1], line_bottom[1])) - bbox_width/2;
+      } else if (hspeed < 0) {
+        x = round(max(line_top[1], line_bottom[1])) + bbox_width/2;
+      }
       hspeed = 0;
    }
 }
@@ -135,7 +140,7 @@ function snap_to_horizontal_surface(line_in1, line_in2, bbox_height) {
    
    //Snap to surface
    var bbox_offset = sign(vspeed)*bbox_height/2;
-   
+
    //Use line that is not noone
    var used_line = line_in1[0] == noone ? line_in2 : line_in1;
    if(line_in1[0] == noone or line_in2[0] == noone) {
@@ -219,7 +224,7 @@ function snap_to_vertical_surface_special(line_in, bbox_width) {
 function check_collision_diagonal(main_line, other_line_x, other_line_y) { 
    var bbox_height = bbox_bottom - bbox_top;
    var bbox_width = bbox_right - bbox_left;
-   
+
    if (main_line[0] = noone and other_line_x[0] = noone and other_line_y[0] = noone) {
       //No collision
    } else if (main_line[0] != noone and other_line_x[0] != noone) {
@@ -326,6 +331,3 @@ function check_collision() {
       check_collision_diagonal(line_bottom_right, line_bottom_left, line_top_right);
    }
 }
-
-
-
