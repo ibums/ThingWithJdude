@@ -305,17 +305,17 @@ function check_collision() {
    }
 
    if (hspeed > 0 or vspeed < 0) {
-      line_top_right = collision_line_point(bbox_right-1, bbox_top, bbox_right-1 + hspeed, bbox_top + vspeed,
+      line_top_right = collision_line_point(bbox_right - 1, bbox_top, bbox_right - 1 + hspeed, bbox_top + vspeed,
       obj_collision, true, true);
    }
 
    if (hspeed < 0 or vspeed > 0) {
-      line_bottom_left = collision_line_point(bbox_left, bbox_bottom-1, bbox_left + hspeed, bbox_bottom-1 + vspeed,
+      line_bottom_left = collision_line_point(bbox_left, bbox_bottom - 1, bbox_left + hspeed, bbox_bottom - 1 + vspeed,
       obj_collision, true, true);
    }
 
    if (hspeed > 0 or vspeed > 0) {  
-      line_bottom_right = collision_line_point(bbox_right-1, bbox_bottom-1, bbox_right-1 + hspeed, bbox_bottom-1 + vspeed,
+      line_bottom_right = collision_line_point(bbox_right - 1, bbox_bottom - 1, bbox_right - 1 + hspeed, bbox_bottom - 1 + vspeed,
       obj_collision, true, true);
    }
 
