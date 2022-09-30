@@ -1,4 +1,7 @@
 {
+  "resourceType": "GMObject",
+  "resourceVersion": "1.0",
+  "name": "obj_diagonal_up",
   "spriteId": {
     "name": "spr_diagonal_up",
     "path": "sprites/spr_diagonal_up/spr_diagonal_up.yy",
@@ -25,7 +28,7 @@
   "physicsKinematic": false,
   "physicsShapePoints": [],
   "eventList": [
-    {"isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,"resourceVersion":"1.0","name":"","tags":[],"resourceType":"GMEvent",},
+    {"resourceType":"GMEvent","resourceVersion":"1.0","name":"","isDnD":false,"eventNum":0,"eventType":0,"collisionObjectId":null,},
   ],
   "properties": [],
   "overriddenProperties": [],
@@ -33,8 +36,4 @@
     "name": "blocks",
     "path": "folders/Objects/blocks.yy",
   },
-  "resourceVersion": "1.0",
-  "name": "obj_diagonal_up",
-  "tags": [],
-  "resourceType": "GMObject",
 }

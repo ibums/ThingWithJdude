@@ -1,20 +1,17 @@
 {
   "resourceType": "GMObject",
   "resourceVersion": "1.0",
-  "name": "obj_semisolid",
+  "name": "obj_camera_transition_horizontal",
   "spriteId": {
-    "name": "spr_semisolid",
-    "path": "sprites/spr_semisolid/spr_semisolid.yy",
+    "name": "spr_camera_transition_horizontal",
+    "path": "sprites/spr_camera_transition_horizontal/spr_camera_transition_horizontal.yy",
   },
   "solid": false,
   "visible": true,
   "managed": true,
   "spriteMaskId": null,
   "persistent": false,
-  "parentObjectId": {
-    "name": "obj_standable",
-    "path": "objects/obj_standable/obj_standable.yy",
-  },
+  "parentObjectId": null,
   "physicsObject": false,
   "physicsSensor": false,
   "physicsShape": 1,
@@ -31,7 +28,7 @@
   "properties": [],
   "overriddenProperties": [],
   "parent": {
-    "name": "blocks",
-    "path": "folders/Objects/blocks.yy",
+    "name": "level_objects",
+    "path": "folders/Objects/level_objects.yy",
   },
 }

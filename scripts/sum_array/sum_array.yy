@@ -1,7 +1,7 @@
 {
   "resourceType": "GMScript",
   "resourceVersion": "1.0",
-  "name": "check_collision",
+  "name": "sum_array",
   "isDnD": false,
   "isCompatibility": false,
   "parent": {

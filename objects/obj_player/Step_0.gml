@@ -541,7 +541,7 @@ grappleSpeed = speed > baseGrappleSpeed ? speed : baseGrappleSpeed;
 update_attack_input();
 
 // Update camera to follow player
-update_camera();
+//update_camera();
 
 if (debugIntent()) {
    print("DEBUG");
