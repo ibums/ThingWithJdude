@@ -3,19 +3,21 @@ function check_downward_slope() {
             
    var stickyness = 31;
    //this controls how fast we can go before flying off a slope, keep this number below 32 - ibums
-            
-   var line_slope_check_left = collision_line_point(bbox_left + hspeed, y,
-   bbox_left + hspeed, bbox_bottom + stickyness, obj_standable, true, true)
+   var bbox_dir_side = hspeed > 0 ? bbox_left : bbox_right;
+   
+   var line_cur_pos = collision_line_point(bbox_dir_side, y,
+   bbox_dir_side, bbox_bottom + stickyness, obj_standable, true, true);
          
-   var line_slope_check_right = collision_line_point(bbox_right-1 + hspeed, y,
-   bbox_right-1 + hspeed, bbox_bottom + stickyness, obj_standable, true, true)
-            
-   if hspeed > 0 and line_slope_check_right[2] > line_slope_check_left[2] {
-      y = round(line_slope_check_left[2] - bbox_height/2);
-   }
-         
-   if hspeed < 0 and line_slope_check_left[2] > line_slope_check_right[2] {   
-      y = round(line_slope_check_right[2] - bbox_height/2);
+   var line_next_pos = collision_line_point(bbox_dir_side + hspeed, y,
+   bbox_dir_side + hspeed, bbox_bottom + stickyness, obj_standable, true, true);
+   
+   //Need to round due to float imprecision
+   var next_pos_line_len = round(line_next_pos[2] - y);
+   
+   //Check if our next position is lower than our current position AND 
+   //the next position has ground < stickyness distance away
+   if (line_cur_pos[2] < line_next_pos[2] && next_pos_line_len < stickyness + 1) {
+      y = round(line_next_pos[2] - bbox_height/2);
       //these need to be round or floor or else when half on a block 
       //your y will be a weird decimal - ibums
    }
@@ -28,14 +30,14 @@ function check_collision_vertical() {
    var line_left = collision_line_point(bbox_left, bbox_y, bbox_left, bbox_y + vspeed,
    obj_collision, true, true);
    
-   var line_right = collision_line_point(bbox_right-1, bbox_y, bbox_right-1, bbox_y + vspeed,
+   var line_right = collision_line_point(bbox_right - 1, bbox_y, bbox_right - 1, bbox_y + vspeed,
    obj_collision, true, true);
 
    if (line_left[0] != noone or line_right[0] != noone) {
       if (vspeed > 0) {
-         y = round(min(line_left[2], line_right[2]))-bbox_height/2;
+         y = round(min(line_left[2], line_right[2])) - bbox_height/2;
       } else {
-         y = round(max(line_left[2], line_right[2]))+bbox_height/2;
+         y = round(max(line_left[2], line_right[2])) + bbox_height/2;
       }
       update_v_speed_and_gravity();
       return;
@@ -72,7 +74,7 @@ function check_collision_horizontal() {
    var line_bottom2 = collision_line_point(x, bbox_bottom - 1, bbox_x + hspeed, bbox_bottom - 1,
    obj_collision, true, true);
       
-   if line_top[0] = noone and (line_bottom[0] = noone and line_bottom2[0] = noone) {
+   if (line_top[0] == noone and (line_bottom[0] == noone and line_bottom2[0] == noone)) {
       check_downward_slope();
       return;
    } else {
@@ -143,8 +145,8 @@ function snap_to_horizontal_surface(line_in1, line_in2, bbox_height) {
 
    //Use line that is not noone
    var used_line = line_in1[0] == noone ? line_in2 : line_in1;
-   if(line_in1[0] == noone or line_in2[0] == noone) {
-      if(vspeed < 0) {
+   if (line_in1[0] == noone or line_in2[0] == noone) {
+      if (vspeed < 0) {
          y = ceil(used_line[2]) - bbox_offset;
       } else {
          y = floor(used_line[2]) - bbox_offset;
@@ -163,7 +165,7 @@ function snap_to_horizontal_surface(line_in1, line_in2, bbox_height) {
 
 function snap_to_vertical_surface(line_in1, line_in2, bbox_width) {
  //Verify at least one raycast hits a surface
-   if(line_in1[0] == noone and line_in2[0] == noone) {
+   if (line_in1[0] == noone and line_in2[0] == noone) {
       print("ERROR vertical snap failed line_in1: ",line_in1[0]," line_in2: ", line_in2[0]);
       return;
    }
@@ -171,13 +173,13 @@ function snap_to_vertical_surface(line_in1, line_in2, bbox_width) {
    //Snap to surface
    var bbox_offset = sign(hspeed)*bbox_width/2;
    
-   if(line_in1[0] == noone) {
-      if(hspeed > 0) {
+   if (line_in1[0] == noone) {
+      if (hspeed > 0) {
          x = ceil(line_in2[1]) - bbox_offset;
       } else {
          x = floor(line_in2[1]) - bbox_offset;
       }
-   } else if(line_in2[0] == noone) {  
+   } else if (line_in2[0] == noone) {  
       if(hspeed > 0) {
          x = ceil(line_in1[1]) - bbox_offset;
       } else {
@@ -200,7 +202,7 @@ function snap_to_vertical_surface(line_in1, line_in2, bbox_width) {
 
 function snap_to_vertical_surface_special(line_in, bbox_width) {
    //Verify raycast hits something
-   if(line_in[0] == noone) {
+   if (line_in[0] == noone) {
       print("ERROR vertical snap special failed line_in: ", line_in[0]);
       return;
    }
@@ -265,7 +267,7 @@ function check_collision_diagonal(main_line, other_line_x, other_line_y) {
       var is_collision_ceiling = check_is_ceiling(main_line);
       var is_collision_wall = check_is_wall(main_line);
       
-      if(is_collision_floor or is_collision_ceiling) {
+      if (is_collision_floor or is_collision_ceiling) {
          snap_to_horizontal_surface(main_line, other_line_x, bbox_height);
       } else if (is_collision_wall) {
          snap_to_vertical_surface(main_line, other_line_y, bbox_width);
