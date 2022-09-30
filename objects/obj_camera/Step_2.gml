@@ -1,5 +1,5 @@
-if hspeed_frame_counter > hspeed_array_size {hspeed_frame_counter = 0}
-if vspeed_frame_counter > vspeed_array_size {vspeed_frame_counter = 0}
+if hspeed_frame_counter > hspeed_array_size-1 {hspeed_frame_counter = 0}
+if vspeed_frame_counter > vspeed_array_size-1 {vspeed_frame_counter = 0}
 
 if instance_exists(global.player_id){	
 	hspeed_array[hspeed_frame_counter++] = global.player_id.hspeed;
@@ -16,11 +16,11 @@ else{
 	vspeed_array[vspeed_frame_counter++] = 0;
 }
 
-average_hspeed = sum_array(hspeed_array, hspeed_array_size)/(hspeed_array_size+1);
-average_vspeed = sum_array(vspeed_array, vspeed_array_size)/(vspeed_array_size+1);
+average_hspeed = sum_array(hspeed_array, hspeed_array_size)/(hspeed_array_size);
+average_vspeed = sum_array(vspeed_array, vspeed_array_size)/(vspeed_array_size);
 
 player_position_x_prediction = player_position_x + 10*average_hspeed;
-player_position_y_prediction = player_position_y + 10*average_vspeed;
+player_position_y_prediction = player_position_y + 5*average_vspeed;
 
 left_push = camera_get_view_x(camera_id) + (camera_width-push_position_x);
 //the point where the player pushes the camera left in left mode

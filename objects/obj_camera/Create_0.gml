@@ -29,20 +29,20 @@ transition_time = 60;
 //the number of frames it takes to switch between left/right or up/down camera modes
 transition_frame = 0;
 
-hspeed_array_size = 29;
-vspeed_array_size = 14;
+hspeed_array_size = 30;
+vspeed_array_size = 30;
 
-var incremented_value = hspeed_array_size;
+var decremented_value = hspeed_array_size;
 
-while (incremented_value>=0){
-	hspeed_array[incremented_value--] = 0;
+while (--decremented_value>=0){
+	hspeed_array[decremented_value] = 0;
 }
 //initialize the hspeed_array
 
-var incremented_value = vspeed_array_size;
+var decremented_value = vspeed_array_size;
 
-while (incremented_value>=0){
-	vspeed_array[incremented_value--] = 0;
+while (--decremented_value>=0){
+	vspeed_array[decremented_value] = 0;
 }
 //initialize the vspeed_array
 
